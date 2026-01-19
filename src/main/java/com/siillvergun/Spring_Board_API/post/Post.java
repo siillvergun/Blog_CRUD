@@ -1,6 +1,6 @@
-package com.siillvergun.PostBoardTest.post;
+package com.siillvergun.Spring_Board_API.post;
 
-import com.siillvergun.PostBoardTest.user.User;
+import com.siillvergun.Spring_Board_API.user.Entity.User;
 import lombok.Getter;
 
 import java.time.LocalDateTime;

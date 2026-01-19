@@ -1,4 +1,4 @@
-package com.siillvergun.PostBoardTest.post;
+package com.siillvergun.Spring_Board_API.post;
 
 import java.util.List;
 import java.util.Optional;

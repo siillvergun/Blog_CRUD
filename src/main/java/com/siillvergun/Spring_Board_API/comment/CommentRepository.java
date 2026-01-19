@@ -1,4 +1,4 @@
-package com.siillvergun.PostBoardTest.comment;
+package com.siillvergun.Spring_Board_API.comment;
 
 import java.util.List;
 import java.util.Optional;
