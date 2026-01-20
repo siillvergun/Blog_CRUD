@@ -22,6 +22,8 @@ public class SecurityConfig {
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         // REST API 서버는 보통 세션을 쓰지 않고 토큰(JWT 등)을 쓰기 때문에, 테스트 편의를 위해 CSRF(사이트 간 요청 위조) 방어 기능을 잠시 꺼두는 것
         http.csrf(csrf -> csrf.disable())
+                // 아래 한 줄을 추가하여 H2 콘솔의 프레임 구조를 허용합니다.
+                .headers(headers -> headers.frameOptions(frame -> frame.sameOrigin()))
                 // 어떤 요청이든 로그인 없이 통과시키라는 뜻입니다. 지금은 개발 단계라 포스트맨으로 편하게 테스트하기 위해 모든 문을 열어둔 상태
                 .authorizeHttpRequests(auth -> auth.anyRequest().permitAll());
         return http.build();

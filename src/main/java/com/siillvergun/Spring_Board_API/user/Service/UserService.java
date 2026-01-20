@@ -18,9 +18,12 @@ public class UserService {
 
     // Create(Request DTO)
     public UserResponse join(UserJoinRequest joinRequest) {
-        User user = joinRequest.toEntity();
-        User savedUser = userRepository.save(user);
-        return UserResponse.from(savedUser); // 이제 포스트맨 응답에 비밀번호가 사라집니다!
+        // 평문 비밀번호 암호화
+        String encodedPassword = passwordEncoder.encode(joinRequest.getPassword());
+
+        // 암호화된 패스워드를 DTO에서 엔티티로 변환하는 메서드의 매개변수로 넘겨줌
+        User user = joinRequest.toEntity(encodedPassword);
+        return UserResponse.from(userRepository.save(user)); // 이제 포스트맨 응답에 비밀번호가 사라짐
     }
 
     // Read(조회)
