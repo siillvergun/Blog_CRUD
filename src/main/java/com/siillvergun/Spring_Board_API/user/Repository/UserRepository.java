@@ -12,5 +12,5 @@ public interface UserRepository extends JpaRepository<User, Long> {
     // 내 필드 검색(findByEmail 등): 인터페이스에 이름만 선언하면 됨 (구현은 스프링 몫).
     // 복잡한 기능: 직접 @Query를 써서 SQL을 알려줘야 함.
     // Optional은 "값이 있을 수도 있고, 없을 수도 있는 상태"를 감싸는 일종의 상자(Wrapper)
-    // 사용하는 이유는
+    // 사용하는 이유는 nullpointexception을 방지하기 위해서
 }

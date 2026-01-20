@@ -27,6 +27,7 @@ public class User extends Base {
     @Column(length = 100, nullable = false)
     private String password;
 
+    // 엔티티는 스스로의 상태를 보호해야하기 떄문에 이런 메서드들이 필요
     public void updateProfile(String nickname, String email) {
         if (nickname != null && !nickname.isBlank()) {
             this.nickname = nickname;
@@ -34,5 +35,14 @@ public class User extends Base {
         if (email != null && !email.isBlank()) {
             this.email = email;
         }
+    }
+
+    public void changePassword(String encryptedPassword) {
+        // 보안 및 데이터 무결성을 위한 최소한의 검증
+        if (encryptedPassword == null || encryptedPassword.isBlank()) {
+            throw new IllegalArgumentException("암호화된 비밀번호가 유효하지 않습니다.");
+        }
+
+        this.password = encryptedPassword;
     }
 }

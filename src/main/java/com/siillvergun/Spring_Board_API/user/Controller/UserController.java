@@ -1,6 +1,7 @@
 package com.siillvergun.Spring_Board_API.user.Controller;
 
 import com.siillvergun.Spring_Board_API.user.Entity.UserJoinRequest;
+import com.siillvergun.Spring_Board_API.user.Entity.UserPasswordUpdateRequest;
 import com.siillvergun.Spring_Board_API.user.Entity.UserProfileUpdateRequest;
 import com.siillvergun.Spring_Board_API.user.Entity.UserResponse;
 import com.siillvergun.Spring_Board_API.user.Service.UserService;
@@ -48,8 +49,13 @@ public class UserController {
 
     // 회원 정보 수정
     @PatchMapping("/{id}")
-    public UserResponse updateProfile(@PathVariable Long id, @RequestBody UserProfileUpdateRequest UpdateRequest) {
-        return userService.updateProfile(id, UpdateRequest);
+    public UserResponse updateProfile(@PathVariable Long id, @RequestBody UserProfileUpdateRequest updateRequest) {
+        return userService.updateProfile(id, updateRequest);
+    }
+
+    @PatchMapping("/password/{id}")
+    public void updatePassword(@PathVariable Long id, @RequestBody UserPasswordUpdateRequest updateRequest) {
+        userService.updatePassword(id, updateRequest);
     }
 
     // 회원 삭제

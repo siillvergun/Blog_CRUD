@@ -1,12 +1,10 @@
 package com.siillvergun.Spring_Board_API.user.Service;
 
-import com.siillvergun.Spring_Board_API.user.Entity.User;
-import com.siillvergun.Spring_Board_API.user.Entity.UserJoinRequest;
-import com.siillvergun.Spring_Board_API.user.Entity.UserProfileUpdateRequest;
-import com.siillvergun.Spring_Board_API.user.Entity.UserResponse;
+import com.siillvergun.Spring_Board_API.user.Entity.*;
 import com.siillvergun.Spring_Board_API.user.Repository.UserRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -16,6 +14,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class UserService {
     private final UserRepository userRepository;
+    private final BCryptPasswordEncoder passwordEncoder;
 
     // Create(Request DTO)
     public UserResponse join(UserJoinRequest joinRequest) {
@@ -61,13 +60,21 @@ public class UserService {
         return UserResponse.from(user);
     }
 
-    /*
-    나중에 비밀번호 암호화 처리 후에 만들기
     @Transactional
-    public User updatePassword(Long id, UserPasswordUpdateRequest updateRequest) {
+    public void updatePassword(Long id, UserPasswordUpdateRequest updateRequest) {
+        User user = getUserByIdForServer(id);
 
+        // 1. 현재 비밀번호가 일치하는지 확인
+        // passwordEncoder.matches(평문, 암호문) 메서드를 사용합니다.
+        if (!passwordEncoder.matches(updateRequest.getCurrentPassword(), user.getPassword())) {
+            throw new IllegalArgumentException("현재 비밀번호가 일치하지 않습니다.");
+        }
+
+        // 2. 새 비밀번호를 암호화하여 저장
+        String encryptedPassword = passwordEncoder.encode(updateRequest.getNewPassword());
+        user.changePassword(encryptedPassword);
+        System.out.println("Password Changed!!");
     }
-    */
 
 
     // Delete(삭제)
