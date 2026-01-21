@@ -1,7 +1,7 @@
 package com.siillvergun.Spring_Board_API.comment;
 
 import com.siillvergun.Spring_Board_API.post.Post;
-import com.siillvergun.Spring_Board_API.user.Entity.User;
+import com.siillvergun.Spring_Board_API.user.entity.User;
 import lombok.Getter;
 
 import java.time.LocalDateTime;

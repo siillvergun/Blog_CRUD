@@ -1,4 +1,4 @@
-package com.siillvergun.Spring_Board_API.user.Service;
+package com.siillvergun.Spring_Board_API.user.service;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

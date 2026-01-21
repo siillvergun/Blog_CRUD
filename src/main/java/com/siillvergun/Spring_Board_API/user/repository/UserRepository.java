@@ -1,6 +1,6 @@
-package com.siillvergun.Spring_Board_API.user.Repository;
+package com.siillvergun.Spring_Board_API.user.repository;
 
-import com.siillvergun.Spring_Board_API.user.Entity.User;
+import com.siillvergun.Spring_Board_API.user.entity.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface UserRepository extends JpaRepository<User, Long> {
