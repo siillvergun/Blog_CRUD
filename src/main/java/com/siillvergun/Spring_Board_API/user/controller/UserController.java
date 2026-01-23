@@ -26,7 +26,7 @@ public class UserController {
         return ResponseEntity.ok(users); // 200ok를 넘겨줌
     }
 
-    /// id로 조회
+    
     @GetMapping("/{id}")
     // @PathVariable : URL 경로에 들어있는 값(예: /users/1에서 1)을 변수로 가져올 때 사용합니다.
     public ResponseEntity<UserResponse> getUserById(@PathVariable Long id) {

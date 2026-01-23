@@ -7,6 +7,7 @@ import com.siillvergun.Spring_Board_API.user.dto.UserResponse;
 import com.siillvergun.Spring_Board_API.user.entity.User;
 import com.siillvergun.Spring_Board_API.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -17,11 +18,13 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
+@Slf4j
 public class UserService {
     private final UserRepository userRepository;
     private final BCryptPasswordEncoder passwordEncoder;
 
     // Create(Request DTO)
+    @Transactional
     public UserResponse join(UserJoinRequest joinRequest) {
         // 평문 비밀번호 암호화
         String encodedPassword = passwordEncoder.encode(joinRequest.getPassword());
@@ -52,7 +55,7 @@ public class UserService {
     // 백엔드 내부에서는 엔티티를 가지고 데이터를 관리하는게 좋기 때문에 메서드 분리
     // JPA는 Entity를 관리하기 때문에 이 객체의 값이 바뀔 때 트랜젝션이 끝날 때 JPA가 자동으로 DB에 반영해줌(JPA는 DTO를 신경쓰지 않음)
     // 메서드 내에서 서버를 위한 유저 검색 메서드
-    public User findUserById(Long id) {
+    private User findUserById(Long id) {
         return userRepository.findById(id).
                 orElseThrow(() -> new IllegalArgumentException("해당 유저가 없습니다."));
     }
@@ -86,17 +89,16 @@ public class UserService {
         // 2. 새 비밀번호를 암호화하여 저장
         String encryptedPassword = passwordEncoder.encode(updateRequest.getNewPassword());
         user.changePassword(encryptedPassword);
-        System.out.println("Password Changed!!");
+        log.info("비밀번호 변경 완료 - 사용자 ID: {}", id);
     }
 
     // Delete(삭제)
+    @Transactional
     public void deleteUser(Long id) {
-        // 1. 해당 유저가 있는지 확인 (선택 사항이나 권장됨)
-        if (!userRepository.existsById(id)) {
-            throw new IllegalArgumentException("삭제하려는 유저가 존재하지 않습니다.");
-        }
+        User user = findUserById(id);
+
         // 2. 삭제 실행
-        System.out.println("Delete!!");
-        userRepository.deleteById(id);
+        log.warn("사용자 삭제 실행 - ID: {}", id);
+        userRepository.delete(user);
     }
 }
