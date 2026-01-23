@@ -1,4 +1,4 @@
-package com.siillvergun.Spring_Board_API.user.DTO;
+package com.siillvergun.Spring_Board_API.user.dto;
 
 import com.siillvergun.Spring_Board_API.user.entity.User;
 import lombok.AllArgsConstructor;
@@ -8,20 +8,21 @@ import lombok.NoArgsConstructor;
 
 @Getter
 @Builder
-@NoArgsConstructor // 스프링이 JSON 데이터를 자바 객체(DTO)로 변환할 때(Jackson 라이브러리), 기본 생성자를 사용해 객체를 먼저 생성
-@AllArgsConstructor // 빌더를 쓰려면 얘가 있어야함
+@NoArgsConstructor
+@AllArgsConstructor
 public class UserJoinRequest {
-    // 가입 시 필요한 딱 3가지 정보만 정의
+    // 가입 시 필요한 딱 3가지 정보만 정의, id는 스프링에서 자동으로 생성
     private String email;
     private String nickname;
     private String password;
 
     // DTO를 엔티티로 변환해주는 편의 메서드
+    // from()이랑 마찬가지
     public User toEntity(String encodedPassword) {
         return User.builder()
                 .email(this.email)
                 .nickname(this.nickname)
-                .password(encodedPassword) // 실제로는 암호화 후 저장해야 합니다.
+                .password(encodedPassword) // 서비스 계층에서 암호화된 비밀번호를 전달받아 엔티티 생성
                 .build();
     }
 }

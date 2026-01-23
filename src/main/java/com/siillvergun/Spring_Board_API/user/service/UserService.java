@@ -1,21 +1,22 @@
 package com.siillvergun.Spring_Board_API.user.service;
 
-import com.siillvergun.Spring_Board_API.user.DTO.UserJoinRequest;
-import com.siillvergun.Spring_Board_API.user.DTO.UserPasswordUpdateRequest;
-import com.siillvergun.Spring_Board_API.user.DTO.UserProfileUpdateRequest;
-import com.siillvergun.Spring_Board_API.user.DTO.UserResponse;
+import com.siillvergun.Spring_Board_API.user.dto.UserJoinRequest;
+import com.siillvergun.Spring_Board_API.user.dto.UserPasswordUpdateRequest;
+import com.siillvergun.Spring_Board_API.user.dto.UserProfileUpdateRequest;
+import com.siillvergun.Spring_Board_API.user.dto.UserResponse;
 import com.siillvergun.Spring_Board_API.user.entity.User;
 import com.siillvergun.Spring_Board_API.user.repository.UserRepository;
-import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
 // 비즈니스 로직을 담는 곳
 @Service
 @RequiredArgsConstructor
+@Transactional(readOnly = true)
 public class UserService {
     private final UserRepository userRepository;
     private final BCryptPasswordEncoder passwordEncoder;
@@ -25,9 +26,10 @@ public class UserService {
         // 평문 비밀번호 암호화
         String encodedPassword = passwordEncoder.encode(joinRequest.getPassword());
 
-        // 암호화된 패스워드를 DTO에서 엔티티로 변환하는 메서드의 매개변수로 넘겨줌
+        // 매개변수로 받은 DTO에서 암호화된 패스워드를 만들고
+        // 다시 엔티티로 변환할때 평문 비밀번호가 아닌 암호화된 패스워드를 넘겨줌
         User user = joinRequest.toEntity(encodedPassword);
-        return UserResponse.toDTO(userRepository.save(user)); // 이제 포스트맨 응답에 비밀번호가 사라짐
+        return UserResponse.from(userRepository.save(user)); // 이제 포스트맨 응답에 비밀번호가 사라짐
     }
 
     // Read(조회)
@@ -36,19 +38,19 @@ public class UserService {
         List<User> users = userRepository.findAll();
 
         return users.stream(). // 컬렉션을 스트림으로 변환 (스트림이란 데이터 소스를 추상화하여 무슨 데이터인지 상관하지않고 같은 방법으로 처리가능 )
-                map(UserResponse::toDTO). // 각 User 객체를 UserResponse로 변환, [ stream().map(클래스명::메서드명) ]
+                map(UserResponse::from). // 각 User 객체를 UserResponse로 변환, [ stream().map(클래스명::메서드명) ]
                 toList(); // 그 결과를 리스트로 모음
     }
 
     // 단건 조회
     // DTO는 외부와 데이터를 주고 받을 때에만 사용
     public UserResponse getUserResponse(Long id) {
-        return userRepository.findById(id).map(UserResponse::toDTO).
+        return userRepository.findById(id).map(UserResponse::from).
                 orElseThrow(() -> new IllegalArgumentException("해당 유저가 없습니다."));
     }
 
     // 백엔드 내부에서는 엔티티를 가지고 데이터를 관리하는게 좋기 때문에 메서드 분리
-    // JPA는 Entity를 관리하기 때문에 이 객체의 값이 바뀔 때 트랜젝션이 끝날 때 JPA가 자동으로 DB에 반영해줌
+    // JPA는 Entity를 관리하기 때문에 이 객체의 값이 바뀔 때 트랜젝션이 끝날 때 JPA가 자동으로 DB에 반영해줌(JPA는 DTO를 신경쓰지 않음)
     // 메서드 내에서 서버를 위한 유저 검색 메서드
     public User findUserById(Long id) {
         return userRepository.findById(id).
@@ -67,9 +69,8 @@ public class UserService {
         // @Transactional이 값의 변경을 감지해 처리
         user.changeProfile(updateRequest.getNickname(), updateRequest.getEmail());
 
-
         // 3. 보안을 위해 엔티티 대신 응답 전용 DTO로 변환하여 반환
-        return UserResponse.toDTO(user);
+        return UserResponse.from(user);
     }
 
     @Transactional
@@ -87,7 +88,6 @@ public class UserService {
         user.changePassword(encryptedPassword);
         System.out.println("Password Changed!!");
     }
-
 
     // Delete(삭제)
     public void deleteUser(Long id) {
