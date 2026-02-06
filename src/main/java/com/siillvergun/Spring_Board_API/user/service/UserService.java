@@ -56,7 +56,7 @@ public class UserService {
     // 백엔드 내부에서는 엔티티를 가지고 데이터를 관리하는게 좋기 때문에 메서드 분리
     // JPA는 Entity를 관리하기 때문에 이 객체의 값이 바뀔 때 트랜젝션이 끝날 때 JPA가 자동으로 DB에 반영해줌(JPA는 DTO를 신경쓰지 않음)
     // 메서드 내에서 서버를 위한 유저 검색 메서드
-    private User findUserById(Long id) {
+    public User findUserById(Long id) {
         return userRepository.findById(id)
                 .orElseThrow(() -> new ComstomException(ErrorCode.USER_NOT_FOUND));
     }
