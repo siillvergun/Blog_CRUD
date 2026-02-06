@@ -1,4 +1,6 @@
-package com.siillvergun.Spring_Board_API.comment;
+package com.siillvergun.Spring_Board_API.comment.repository;
+
+import com.siillvergun.Spring_Board_API.comment.entity.Comment;
 
 import java.util.List;
 import java.util.Optional;

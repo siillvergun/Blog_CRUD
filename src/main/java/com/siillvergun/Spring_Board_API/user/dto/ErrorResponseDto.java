@@ -6,12 +6,12 @@ import lombok.Getter;
 
 @Getter
 @Builder
-public class ErrorResponse {
+public class ErrorResponseDto {
     private final String errorcode;
     private final String message;
 
-    public static ErrorResponse of(ErrorCode errorCode, String detail) {
-        return ErrorResponse.builder()
+    public static ErrorResponseDto of(ErrorCode errorCode) {
+        return ErrorResponseDto.builder()
                 .errorcode(errorCode.getCode())
                 .message(errorCode.getMessage())
                 .build();

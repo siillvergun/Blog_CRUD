@@ -2,10 +2,10 @@ package com.siillvergun.Spring_Board_API.user.service;
 
 import com.siillvergun.Spring_Board_API.common.ComstomException;
 import com.siillvergun.Spring_Board_API.common.ErrorCode;
-import com.siillvergun.Spring_Board_API.user.dto.UserJoinRequest;
-import com.siillvergun.Spring_Board_API.user.dto.UserPasswordUpdateRequest;
-import com.siillvergun.Spring_Board_API.user.dto.UserProfileUpdateRequest;
-import com.siillvergun.Spring_Board_API.user.dto.UserResponse;
+import com.siillvergun.Spring_Board_API.user.dto.UserJoinRequestDto;
+import com.siillvergun.Spring_Board_API.user.dto.UserPasswordUpdateRequestDto;
+import com.siillvergun.Spring_Board_API.user.dto.UserProfileUpdateRequestDto;
+import com.siillvergun.Spring_Board_API.user.dto.UserResponseDto;
 import com.siillvergun.Spring_Board_API.user.entity.User;
 import com.siillvergun.Spring_Board_API.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -27,30 +27,29 @@ public class UserService {
 
     // Create(Request DTO)
     @Transactional
-    public UserResponse join(UserJoinRequest joinRequest) {
+    public UserResponseDto join(UserJoinRequestDto joinRequest) {
         // 평문 비밀번호 암호화
         String encodedPassword = passwordEncoder.encode(joinRequest.getPassword());
 
-        // 매개변수로 받은 DTO에서 암호화된 패스워드를 만들고
-        // 다시 엔티티로 변환할때 평문 비밀번호가 아닌 암호화된 패스워드를 넘겨줌
+        // 매개변수로 받은 DTO에서 암호화된 패스워드를 만들고 다시 엔티티로 변환할때 평문 비밀번호가 아닌 암호화된 패스워드를 넘겨줌
         User user = joinRequest.toEntity(encodedPassword);
-        return UserResponse.from(userRepository.save(user)); // 이제 포스트맨 응답에 비밀번호가 사라짐
+        return UserResponseDto.from(userRepository.save(user)); // 이제 포스트맨 응답에 비밀번호가 사라짐
     }
 
     // Read(조회)
     // 전체 조회
-    public List<UserResponse> getAllUsers() {
+    public List<UserResponseDto> getAllUsers() {
         List<User> users = userRepository.findAll();
 
         return users.stream(). // 컬렉션을 스트림으로 변환 (스트림이란 데이터 소스를 추상화하여 무슨 데이터인지 상관하지않고 같은 방법으로 처리가능 )
-                map(UserResponse::from). // 각 User 객체를 UserResponse로 변환, [ stream().map(클래스명::메서드명) ]
+                map(UserResponseDto::from). // 각 User 객체를 UserResponse로 변환, [ stream().map(클래스명::메서드명) ]
                 toList(); // 그 결과를 리스트로 모음
     }
 
     // 단건 조회
     // DTO는 외부와 데이터를 주고 받을 때에만 사용
-    public UserResponse getUserResponse(Long id) {
-        return userRepository.findById(id).map(UserResponse::from)
+    public UserResponseDto getUserResponse(Long id) {
+        return userRepository.findById(id).map(UserResponseDto::from)
                 .orElseThrow(() -> new ComstomException(ErrorCode.USER_NOT_FOUND));
     }
 
@@ -64,7 +63,7 @@ public class UserService {
 
     // Update(갱신, DTO)
     @Transactional // 값 변경을 감지하는 어노테이션
-    public UserResponse updateProfile(Long id, UserProfileUpdateRequest updateRequest) {
+    public UserResponseDto updateProfile(Long id, UserProfileUpdateRequestDto updateRequest) {
         // 1. DB에서 기존 유저를 조회
         User user = findUserById(id);
 
@@ -75,11 +74,11 @@ public class UserService {
         user.changeProfile(updateRequest.getNickname(), updateRequest.getEmail());
 
         // 3. 보안을 위해 엔티티 대신 응답 전용 DTO로 변환하여 반환
-        return UserResponse.from(user);
+        return UserResponseDto.from(user);
     }
 
     @Transactional
-    public void updatePassword(Long id, UserPasswordUpdateRequest updateRequest) {
+    public void updatePassword(Long id, UserPasswordUpdateRequestDto updateRequest) {
         User user = findUserById(id);
 
         // 1. 현재 비밀번호가 일치하는지 확인

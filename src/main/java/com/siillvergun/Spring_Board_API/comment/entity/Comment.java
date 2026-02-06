@@ -1,6 +1,6 @@
-package com.siillvergun.Spring_Board_API.comment;
+package com.siillvergun.Spring_Board_API.comment.entity;
 
-import com.siillvergun.Spring_Board_API.post.Post;
+import com.siillvergun.Spring_Board_API.post.entity.Post;
 import com.siillvergun.Spring_Board_API.user.entity.User;
 import lombok.Getter;
 
