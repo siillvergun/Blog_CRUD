@@ -2,7 +2,9 @@ package com.siillvergun.Spring_Board_API.user.repository;
 
 import com.siillvergun.Spring_Board_API.user.entity.User;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
 
+@Repository
 public interface UserRepository extends JpaRepository<User, Long> {
     // JpaRepository를 상속(제네릭)
     // 규칙: find + By + 필드명

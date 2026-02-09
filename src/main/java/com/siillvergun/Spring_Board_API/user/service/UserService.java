@@ -1,7 +1,7 @@
 package com.siillvergun.Spring_Board_API.user.service;
 
-import com.siillvergun.Spring_Board_API.common.ComstomException;
-import com.siillvergun.Spring_Board_API.common.ErrorCode;
+import com.siillvergun.Spring_Board_API.global.CustomException;
+import com.siillvergun.Spring_Board_API.global.ErrorCode;
 import com.siillvergun.Spring_Board_API.user.dto.UserJoinRequestDto;
 import com.siillvergun.Spring_Board_API.user.dto.UserPasswordUpdateRequestDto;
 import com.siillvergun.Spring_Board_API.user.dto.UserProfileUpdateRequestDto;
@@ -50,7 +50,7 @@ public class UserService {
     // DTO는 외부와 데이터를 주고 받을 때에만 사용
     public UserResponseDto getUserResponse(Long id) {
         return userRepository.findById(id).map(UserResponseDto::from)
-                .orElseThrow(() -> new ComstomException(ErrorCode.USER_NOT_FOUND));
+                .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
     }
 
     // 백엔드 내부에서는 엔티티를 가지고 데이터를 관리하는게 좋기 때문에 메서드 분리
@@ -58,7 +58,7 @@ public class UserService {
     // 메서드 내에서 서버를 위한 유저 검색 메서드
     public User findUserById(Long id) {
         return userRepository.findById(id)
-                .orElseThrow(() -> new ComstomException(ErrorCode.USER_NOT_FOUND));
+                .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
     }
 
     // Update(갱신, DTO)

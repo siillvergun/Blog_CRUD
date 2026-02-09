@@ -1,4 +1,4 @@
-package com.siillvergun.Spring_Board_API.common;
+package com.siillvergun.Spring_Board_API.global;
 
 import com.siillvergun.Spring_Board_API.user.dto.ErrorResponseDto;
 import lombok.extern.slf4j.Slf4j;
@@ -10,8 +10,8 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 @RestControllerAdvice
 @Slf4j
 public class GlobalExceptionHandler {
-    @ExceptionHandler(ComstomException.class)
-    public ResponseEntity<ErrorResponseDto> handleCustomException(ComstomException e) {
+    @ExceptionHandler(CustomException.class)
+    public ResponseEntity<ErrorResponseDto> handleCustomException(CustomException e) {
         ErrorCode errorCode = e.getErrorCode();
         log.error("Custom Error: {} - {}", errorCode.getCode(), errorCode.getMessage());
 

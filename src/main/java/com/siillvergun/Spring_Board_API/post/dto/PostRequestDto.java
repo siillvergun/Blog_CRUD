@@ -5,10 +5,12 @@ import com.siillvergun.Spring_Board_API.user.entity.User;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 @Getter
 @Builder
 @AllArgsConstructor
+@NoArgsConstructor
 public class PostRequestDto {
     private String title;
     private String content;

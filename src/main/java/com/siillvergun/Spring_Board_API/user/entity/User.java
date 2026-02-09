@@ -1,6 +1,6 @@
 package com.siillvergun.Spring_Board_API.user.entity;
 
-import com.siillvergun.Spring_Board_API.common.BaseEntity;
+import com.siillvergun.Spring_Board_API.global.BaseEntity;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;
