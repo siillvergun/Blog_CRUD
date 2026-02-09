@@ -27,7 +27,7 @@ public class PostController {
     }
 
     /// 모든 게시글 검색 & 제목/내용 검색
-    // **"전체 조회를 하되, 만약 제목(title)이라는 파라미터가 들어오면 검색을 하겠다"**는 논리로 접근해야 합니다.
+    // **"전체 조회를 하되, 만약 제목(title)또는 내용(content)이라는 파라미터가 들어오면 검색을 하겠다"**는 논리로 접근
     @GetMapping
     public ResponseEntity<List<PostResponseDto>> getPosts(
             @RequestParam(required = false) String title,

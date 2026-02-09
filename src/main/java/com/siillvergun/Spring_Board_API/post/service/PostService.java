@@ -75,7 +75,7 @@ public class PostService {
     }
 
     // postRepository.findById()은 반환값이 Optional, 또한 내부 로직에서는 DTO보다 Entity를 직접 다루는게 좋음
-    //
+    // Post를 반환값으로 가지는 메서드를 정의
     public Post findByPostId(Long postId) {
         return postRepository.findById(postId)
                 .orElseThrow(() -> new CustomException(POST_NOT_FOUND));
