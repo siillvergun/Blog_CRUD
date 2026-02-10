@@ -11,17 +11,19 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("posts")
+@RequestMapping("/posts")
 @RequiredArgsConstructor
 public class PostController {
     private final PostService postService;
 
     ///  게시글 생성
-    @PostMapping("create/{userId}")
+    @PostMapping
     public ResponseEntity<PostResponseDto> createPost(
             @RequestBody PostRequestDto postRequestDto,
-            @PathVariable Long userId
+            @RequestParam Long userId
+
     ) {
+        // DTO 내부의 userId를 사용하여 생성
         PostResponseDto response = postService.createPost(postRequestDto, userId);
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
@@ -52,19 +54,20 @@ public class PostController {
 
 
     /// 유저 게시글 조회
-    @GetMapping("/{userId}")
+    @GetMapping("/user/{userId}")
     public ResponseEntity<List<PostResponseDto>> getUserPosts(@PathVariable Long userId) {
+        // 경로 변수로 받은 userId를 서비스에 전달
         List<PostResponseDto> userPosts = postService.getPostByAuthor(userId);
         return ResponseEntity.ok(userPosts);
     }
 
 
     /// 게시글 수정
-    @PatchMapping("/update/{postId}")
+    @PatchMapping("/{postId}")
     public ResponseEntity<PostResponseDto> updatePost(
             @PathVariable Long postId,
-            @RequestParam Long userId,
-            @RequestBody PostRequestDto updateDto
+            @RequestBody PostRequestDto updateDto,
+            @RequestParam Long userId
     ) {
         PostResponseDto response = postService.updatePost(postId, updateDto, userId);
         return ResponseEntity.ok(response);
@@ -72,10 +75,10 @@ public class PostController {
 
 
     /// 게시글 삭제
-    @DeleteMapping("/delete/{postId}")
-    public ResponseEntity<PostResponseDto> deletePost(
+    @DeleteMapping("/{postId}")
+    public ResponseEntity<Void> deletePost(
             @PathVariable Long postId,
-            @RequestParam Long userId
+            @RequestParam Long userId // DELETE는 바디 대신 파라미터 사용 권장
     ) {
         postService.deletePost(postId, userId);
         return ResponseEntity.noContent().build();

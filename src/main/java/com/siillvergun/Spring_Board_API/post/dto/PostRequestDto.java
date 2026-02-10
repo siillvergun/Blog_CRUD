@@ -16,7 +16,6 @@ public class PostRequestDto {
     private String content;
     private String img;
 
-
     public Post toEntity(User author) {
         return Post.builder()
                 .title(this.title)

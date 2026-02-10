@@ -3,20 +3,34 @@ package com.siillvergun.Spring_Board_API.comment.entity;
 import com.siillvergun.Spring_Board_API.global.BaseEntity;
 import com.siillvergun.Spring_Board_API.post.entity.Post;
 import com.siillvergun.Spring_Board_API.user.entity.User;
-import jakarta.persistence.Entity;
+import jakarta.persistence.*;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-
-import java.time.LocalDateTime;
 
 @Getter
 @NoArgsConstructor
 @Entity
 public class Comment extends BaseEntity {
-    private Post post;
-    private User author;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long commentId;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "post_id")
+    private Post post;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id")
+    private User author;
+
+    @Column(length = 100)
     private String content;
-    private LocalDateTime createdAt;
-    private LocalDateTime updatedAt;
+
+    @Builder
+    public Comment(String content, Post post, User author) {
+        this.author = author;
+        this.post = post;
+        this.content = content;
+    }
 }

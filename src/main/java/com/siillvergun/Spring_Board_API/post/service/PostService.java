@@ -40,7 +40,7 @@ public class PostService {
     /// read
     // 게시글 전체 조회
     public List<PostResponseDto> getAllPost() {
-        List<Post> posts = postRepository.findAll();
+        List<Post> posts = postRepository.findAllWithAuthor();
 
         return posts.stream(). // 컬렉션을 스트림으로 변환 (스트림이란 데이터 소스를 추상화하여 무슨 데이터인지 상관하지않고 같은 방법으로 처리가능 )
                 map(PostResponseDto::from). // 각 User 객체를 UserResponse로 변환, [ stream().map(클래스명::메서드명) ]
