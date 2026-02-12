@@ -23,7 +23,8 @@ public class CommentResponseDto {
     public static CommentResponseDto from(Comment comment) {
         return CommentResponseDto.builder()
                 .commentId(comment.getCommentId())
-                .title(comment.getAuthor().getNickname())
+                .title(comment.getPost().getTitle())
+                .authorNickname(comment.getAuthor().getNickname())
                 .contnet(comment.getContent())
                 .createdAt(comment.getCreatedAt())
                 .updatedAt(comment.getUpdatedAt()).build();

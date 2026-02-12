@@ -1,11 +1,16 @@
 package com.siillvergun.Spring_Board_API.user.entity;
 
+import com.siillvergun.Spring_Board_API.comment.entity.Comment;
 import com.siillvergun.Spring_Board_API.global.BaseEntity;
+import com.siillvergun.Spring_Board_API.post.entity.Post;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Getter // 각 필드값을 가져오는 메서드 자동 생성
 @NoArgsConstructor(access = AccessLevel.PROTECTED) // 기본 생성자
@@ -24,6 +29,13 @@ public class User extends BaseEntity {
 
     @Column(length = 100, nullable = false)
     private String password;
+
+    // 영속성 전이 설정
+    @OneToMany(mappedBy = "author", cascade = CascadeType.REMOVE, orphanRemoval = true)
+    private List<Post> posts = new ArrayList<>();
+
+    @OneToMany(mappedBy = "author", cascade = CascadeType.REMOVE, orphanRemoval = true)
+    private List<Comment> comments = new ArrayList<>();
 
     // id는 DB가 자동으로 채워주기때문에 제외
     @Builder

@@ -49,7 +49,7 @@ public class PostService {
 
     // 작성자로 조회
     public List<PostResponseDto> getPostByAuthor(Long userId) {
-        List<Post> postsByUserId = postRepository.findByAuthor_UserId(userId);
+        List<Post> postsByUserId = postRepository.findByAuthorUserId(userId);
 
         return postsByUserId.stream()
                 .map(PostResponseDto::from)
@@ -81,15 +81,19 @@ public class PostService {
                 .orElseThrow(() -> new CustomException(POST_NOT_FOUND));
     }
 
+    // 작성자 검증 로직
+    private void authAccess(Post post, Long userId) {
+        if (!post.getAuthor().getUserId().equals(userId)) {
+            throw new CustomException(ErrorCode.UNAUTHORIZED_ACCESS);
+        }
+    }
+
     /// update
     @Transactional
     public PostResponseDto updatePost(Long postId, PostRequestDto updateDto, Long userId) {
         Post post = findByPostId(postId);
 
-        // 작성자 검증 로직 (예시)
-        if (!post.getAuthor().getUserId().equals(userId)) {
-            throw new CustomException(ErrorCode.UNAUTHORIZED_ACCESS);
-        }
+        authAccess(post, userId);
 
         post.updateTitle(updateDto.getTitle());
         post.updateContent(updateDto.getContent());
@@ -102,10 +106,7 @@ public class PostService {
     public void deletePost(Long postId, Long userId) {
         Post post = findByPostId(postId);
 
-        // 작성자 본인인지 확인 로직 추가
-        if (!post.getAuthor().getUserId().equals(userId)) {
-            throw new CustomException(ErrorCode.UNAUTHORIZED_ACCESS);
-        }
+        authAccess(post, userId);
 
         postRepository.deleteById(postId);
         log.warn("게시글 삭제 실행 - ID: {}", postId);

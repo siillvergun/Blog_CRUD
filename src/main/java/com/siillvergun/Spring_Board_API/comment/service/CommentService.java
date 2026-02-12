@@ -1,5 +1,13 @@
 package com.siillvergun.Spring_Board_API.comment.service;
 
+import com.siillvergun.Spring_Board_API.comment.dto.CommentRequestDto;
+import com.siillvergun.Spring_Board_API.comment.dto.CommentResponseDto;
+import com.siillvergun.Spring_Board_API.comment.entity.Comment;
+import com.siillvergun.Spring_Board_API.comment.repository.CommentRepository;
+import com.siillvergun.Spring_Board_API.post.entity.Post;
+import com.siillvergun.Spring_Board_API.post.service.PostService;
+import com.siillvergun.Spring_Board_API.user.entity.User;
+import com.siillvergun.Spring_Board_API.user.service.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -10,5 +18,20 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional(readOnly = true)
 @Slf4j
 public class CommentService {
-    
+    private final UserService userService;
+    private final PostService postService;
+    private final CommentRepository commentRepository;
+
+    public CommentResponseDto createComment(CommentRequestDto commentRequestDto, Long userId, Long postId) {
+        // 누가, 어디에 쓰는지가 중요하므로 id를 통해 DB에서 객체를 찾아온다
+        User user = userService.findUserById(userId);
+        Post post = postService.findByPostId(postId);
+
+        // 클라이언트가 보낸 요청을 엔티티로 바꿔 dto에서 entity로 바꾼다.
+        Comment comment = commentRequestDto.toEntity(user, post);
+
+        // 완성된 entity를 DB에 저장함. 이떄 DB에서 엔티티에 id, 생성일 등 서버에서 처리해주는 값들을 채워넣는다.
+        // 그런뒤 완성된 entity를 from메서드를 통해 클라이언트에 넘겨줄 값만 선정해 응답Dto로 넘겨준다.
+        return CommentResponseDto.from(commentRepository.save(comment));
+    }
 }

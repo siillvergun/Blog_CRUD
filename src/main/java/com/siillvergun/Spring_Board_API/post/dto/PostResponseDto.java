@@ -1,6 +1,5 @@
 package com.siillvergun.Spring_Board_API.post.dto;
 
-
 import com.siillvergun.Spring_Board_API.post.entity.Post;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -28,7 +27,7 @@ public class PostResponseDto {
                 .title(post.getTitle())
                 .content(post.getContent())
                 .img(post.getImg())
-                .authorNickname(post.getAuthor().getNickname())
+                .authorNickname(post.getAuthor().getNickname()) // 이때 user조회 쿼리 보냄 -> 총 N개의 쿼리가 발생
                 .createdAt(post.getCreatedAt())
                 .updatedAt(post.getUpdatedAt())
                 .build();

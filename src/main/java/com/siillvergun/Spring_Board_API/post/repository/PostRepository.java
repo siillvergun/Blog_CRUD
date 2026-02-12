@@ -10,7 +10,7 @@ import java.util.List;
 @Repository
 public interface PostRepository extends JpaRepository<Post, Long> {
     // userId로 작성자 찾기
-    List<Post> findByAuthor_UserId(Long userId);
+    List<Post> findByAuthorUserId(Long userId);
 
     // 제목으로 검색
     List<Post> findByTitleContaining(String title);

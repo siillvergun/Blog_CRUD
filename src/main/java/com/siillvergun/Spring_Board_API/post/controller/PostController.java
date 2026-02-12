@@ -12,7 +12,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/posts")
-@RequiredArgsConstructor
+@RequiredArgsConstructor // final
 public class PostController {
     private final PostService postService;
 
@@ -28,6 +28,7 @@ public class PostController {
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
+
     /// 모든 게시글 검색 & 제목/내용 검색
     // **"전체 조회를 하되, 만약 제목(title)또는 내용(content)이라는 파라미터가 들어오면 검색을 하겠다"**는 논리로 접근
     @GetMapping
@@ -35,18 +36,6 @@ public class PostController {
             @RequestParam(required = false) String title,
             @RequestParam(required = false) String content
     ) {
-        // 제목 검색
-        if (title != null && !title.isBlank()) {
-            List<PostResponseDto> searchTitle = postService.getPostByTitle(title);
-            return ResponseEntity.ok(searchTitle);
-        }
-
-        // 내용 검색
-        else if (content != null && !content.isBlank()) {
-            List<PostResponseDto> searchContent = postService.getPostByContent(content);
-            return ResponseEntity.ok(searchContent);
-        }
-
         // 전체 검색
         List<PostResponseDto> AllPosts = postService.getAllPost();
         return ResponseEntity.ok(AllPosts);
