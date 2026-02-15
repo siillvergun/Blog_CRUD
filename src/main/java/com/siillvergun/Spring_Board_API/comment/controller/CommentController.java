@@ -37,4 +37,13 @@ public class CommentController {
         List<CommentResponseDto> response = commentService.getAllComment();
         return ResponseEntity.ok(response);
     }
+
+    @PatchMapping
+    public ResponseEntity<CommentResponseDto> updateComment(
+            @PathVariable Long commentId,
+            @RequestParam String changedContent
+    ) {
+        CommentResponseDto response = commentService.updateComment(commentId, changedContent);
+        return ResponseEntity.ok(response);
+    }
 }
