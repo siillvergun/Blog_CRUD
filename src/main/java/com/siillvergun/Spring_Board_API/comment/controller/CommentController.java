@@ -1,7 +1,30 @@
 package com.siillvergun.Spring_Board_API.comment.controller;
 
-import org.springframework.stereotype.Controller;
+import com.siillvergun.Spring_Board_API.comment.dto.CommentRequestDto;
+import com.siillvergun.Spring_Board_API.comment.dto.CommentResponseDto;
+import com.siillvergun.Spring_Board_API.comment.service.CommentService;
+import com.siillvergun.Spring_Board_API.post.service.PostService;
+import com.siillvergun.Spring_Board_API.user.service.UserService;
+import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 
-@Controller
+@RestController
+@RequestMapping("/comments")
+@RequiredArgsConstructor
 public class CommentController {
+    private final UserService userService;
+    private final PostService postService;
+    private final CommentService commentService;
+
+    @PostMapping
+    public ResponseEntity<CommentResponseDto> createComment(
+            @RequestBody CommentRequestDto commentRequestDto,
+            @RequestParam Long userId,
+            @RequestParam Long postId
+    ) {
+        CommentResponseDto response = commentService.createComment(commentRequestDto, userId, postId);
+        return ResponseEntity.status(HttpStatus.CREATED).body(response);
+    }
 }
