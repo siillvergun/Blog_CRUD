@@ -10,6 +10,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/comments")
 @RequiredArgsConstructor
@@ -26,5 +28,13 @@ public class CommentController {
     ) {
         CommentResponseDto response = commentService.createComment(commentRequestDto, userId, postId);
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
+    }
+
+
+    @GetMapping
+    public ResponseEntity<List<CommentResponseDto>> getAllComment(
+    ) {
+        List<CommentResponseDto> response = commentService.getAllComment();
+        return ResponseEntity.ok(response);
     }
 }
