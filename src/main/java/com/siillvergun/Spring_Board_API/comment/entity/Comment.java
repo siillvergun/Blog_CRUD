@@ -35,7 +35,7 @@ public class Comment extends BaseEntity {
     }
 
     public void changeComment(String content) {
-        if (content != null || content.isBlank())
+        if (content != null && content.isBlank())
             this.content = content;
     }
 }

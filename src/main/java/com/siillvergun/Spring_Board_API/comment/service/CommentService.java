@@ -45,15 +45,15 @@ public class CommentService {
 
     // Read
     public List<CommentResponseDto> getAllComment() {
-        List<Comment> comments = commentRepository.findAll();
+        List<Comment> comments = commentRepository.findAllWithAuthorAndPost();
 
         return comments.stream()
                 .map(CommentResponseDto::from)
                 .toList();
     }
 
-    private Comment findByCommentId(Long postId) {
-        return commentRepository.findById(postId)
+    private Comment findByCommentId(Long commentId) {
+        return commentRepository.findById(commentId)
                 .orElseThrow(() -> new CustomException(POST_NOT_FOUND));
     }
 

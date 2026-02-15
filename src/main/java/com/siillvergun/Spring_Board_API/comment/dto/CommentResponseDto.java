@@ -15,7 +15,7 @@ import java.time.LocalDateTime;
 public class CommentResponseDto {
     private Long commentId;
     private String title;
-    private String contnet;
+    private String content;
     private String authorNickname;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
@@ -25,7 +25,7 @@ public class CommentResponseDto {
                 .commentId(comment.getCommentId())
                 .title(comment.getPost().getTitle())
                 .authorNickname(comment.getAuthor().getNickname())
-                .contnet(comment.getContent())
+                .content(comment.getContent())
                 .createdAt(comment.getCreatedAt())
                 .updatedAt(comment.getUpdatedAt()).build();
     }
