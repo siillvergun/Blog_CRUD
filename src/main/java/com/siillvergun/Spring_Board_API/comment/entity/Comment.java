@@ -11,6 +11,7 @@ import lombok.NoArgsConstructor;
 @Getter
 @NoArgsConstructor
 @Entity
+@Table(name = "comments")
 public class Comment extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -35,7 +36,7 @@ public class Comment extends BaseEntity {
     }
 
     public void changeComment(String content) {
-        if (content != null && content.isBlank())
+        if (content != null && !content.isBlank())
             this.content = content;
     }
 }

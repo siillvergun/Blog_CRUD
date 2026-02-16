@@ -1,5 +1,6 @@
 package com.siillvergun.Spring_Board_API.post.entity;
 
+import com.siillvergun.Spring_Board_API.comment.entity.Comment;
 import com.siillvergun.Spring_Board_API.global.BaseEntity;
 import com.siillvergun.Spring_Board_API.user.entity.User;
 import jakarta.persistence.*;
@@ -7,6 +8,9 @@ import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Getter
 // protected로 설정하면 외부에서 new를 통해 직접 호출하는 것은 막으면서, JPA(상속 관계나 프록시 객체)는 이 생성자에 접근할 수 있도록 허용해줌.
@@ -38,6 +42,9 @@ public class Post extends BaseEntity {
 
     @Column(length = 200)
     private String img;
+
+    @OneToMany(mappedBy = "post", cascade = CascadeType.REMOVE, orphanRemoval = true)
+    private List<Comment> comments = new ArrayList<>();
 
     // 게시글은 postId를 몰라도 되기 때문에 클래스에 @빌더를 다는게 아니라 생성자를 따로 만듦
     @Builder
