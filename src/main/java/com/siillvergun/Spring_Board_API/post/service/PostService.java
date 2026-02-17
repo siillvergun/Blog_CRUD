@@ -5,6 +5,7 @@ import com.siillvergun.Spring_Board_API.global.ErrorCode;
 import com.siillvergun.Spring_Board_API.post.dto.PostRequestDto;
 import com.siillvergun.Spring_Board_API.post.dto.PostResponseDto;
 import com.siillvergun.Spring_Board_API.post.entity.Post;
+import com.siillvergun.Spring_Board_API.post.repository.PostLikeRepository;
 import com.siillvergun.Spring_Board_API.post.repository.PostRepository;
 import com.siillvergun.Spring_Board_API.user.entity.User;
 import com.siillvergun.Spring_Board_API.user.service.UserService;
@@ -25,7 +26,7 @@ import static com.siillvergun.Spring_Board_API.global.ErrorCode.POST_NOT_FOUND;
 public class PostService {
     private final PostRepository postRepository;
     private final UserService userService;
-
+    private final PostLikeRepository postLikeRepository;
 
     /// create
     @Transactional // 쓰기 작업이 있는 메서드만
@@ -112,5 +113,8 @@ public class PostService {
         log.warn("게시글 삭제 실행 - ID: {}", postId);
     }
 
+    @Transactional
+    public void toggleLike(Long userId, Long postId) {
 
+    }
 }

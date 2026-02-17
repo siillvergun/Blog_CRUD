@@ -8,6 +8,7 @@ import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.ColumnDefault;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -43,16 +44,21 @@ public class Post extends BaseEntity {
     @Column(length = 200)
     private String img;
 
+    @Column(nullable = false)
+    @ColumnDefault("0") // DB에 기본값 0으로 설정
+    private Long likeCount = 0L; // 자바 객체에서도 기본값 0
+
     @OneToMany(mappedBy = "post", cascade = CascadeType.REMOVE, orphanRemoval = true)
     private List<Comment> comments = new ArrayList<>();
 
     // 게시글은 postId를 몰라도 되기 때문에 클래스에 @빌더를 다는게 아니라 생성자를 따로 만듦
     @Builder
-    public Post(User author, String title, String content, String img) {
+    public Post(User author, String title, String content, String img, Long likeCount) {
         this.author = author;
         this.title = title;
         this.content = content;
         this.img = img;
+        this.likeCount = likeCount;
     }
 
     public void updateTitle(String title) {
@@ -67,9 +73,12 @@ public class Post extends BaseEntity {
         }
     }
 
-    @Getter
-    @NoArgsConstructor
-    @Entity
-    public static class PostLikeEntity extends BaseEntity {
+    public void increaseLikeCount() {
+        this.likeCount++;
+    }
+
+    public void decreaseLikeCount() {
+        if (this.likeCount > 0)
+            this.likeCount--;
     }
 }
