@@ -111,4 +111,6 @@ public class PostService {
         postRepository.deleteById(postId);
         log.warn("게시글 삭제 실행 - ID: {}", postId);
     }
+
+
 }

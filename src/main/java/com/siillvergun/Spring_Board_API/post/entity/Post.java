@@ -67,4 +67,9 @@ public class Post extends BaseEntity {
         }
     }
 
+    @Getter
+    @NoArgsConstructor
+    @Entity
+    public static class PostLikeEntity extends BaseEntity {
+    }
 }
