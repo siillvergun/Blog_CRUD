@@ -2,7 +2,6 @@ package com.siillvergun.Spring_Board_API.comment.controller;
 
 import com.siillvergun.Spring_Board_API.comment.dto.CommentRequestDto;
 import com.siillvergun.Spring_Board_API.comment.dto.CommentResponseDto;
-import com.siillvergun.Spring_Board_API.comment.dto.CommentUpdateDto;
 import com.siillvergun.Spring_Board_API.comment.service.CommentService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -38,9 +37,9 @@ public class CommentController {
     @PatchMapping("/{commentId}")
     public ResponseEntity<CommentResponseDto> updateComment(
             @PathVariable Long commentId,
-            @RequestBody CommentUpdateDto commentUpdateDto
+            @RequestBody CommentRequestDto commentRequestDto
     ) {
-        CommentResponseDto response = commentService.updateComment(commentId, commentUpdateDto.getContent());
+        CommentResponseDto response = commentService.updateComment(commentId, commentRequestDto.getContent());
         return ResponseEntity.ok(response);
     }
 

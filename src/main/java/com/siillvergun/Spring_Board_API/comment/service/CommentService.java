@@ -3,6 +3,8 @@ package com.siillvergun.Spring_Board_API.comment.service;
 import com.siillvergun.Spring_Board_API.comment.dto.CommentRequestDto;
 import com.siillvergun.Spring_Board_API.comment.dto.CommentResponseDto;
 import com.siillvergun.Spring_Board_API.comment.entity.Comment;
+import com.siillvergun.Spring_Board_API.comment.entity.CommentLike;
+import com.siillvergun.Spring_Board_API.comment.repository.CommentLikeRepository;
 import com.siillvergun.Spring_Board_API.comment.repository.CommentRepository;
 import com.siillvergun.Spring_Board_API.global.CustomException;
 import com.siillvergun.Spring_Board_API.post.entity.Post;
@@ -15,6 +17,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
 
 import static com.siillvergun.Spring_Board_API.global.ErrorCode.POST_NOT_FOUND;
 
@@ -26,6 +29,7 @@ public class CommentService {
     private final UserService userService;
     private final PostService postService;
     private final CommentRepository commentRepository;
+    private final CommentLikeRepository commentLikeRepository;
 
     // Create
     @Transactional
@@ -73,5 +77,27 @@ public class CommentService {
         Comment comment = findByCommentId(commendId);
         commentRepository.delete(comment);
         log.warn("댓글 삭제 실행 - ID: {}", commendId);
+    }
+
+    @Transactional
+    public void toggleLike(Long userId, Long postId) {
+        // 1. 게시글과 유저 존재 확인
+        Post post = postService.findByPostId(postId);
+        User user = userService.findUserById(userId);
+
+        // 2. 이미 좋아요를 눌렀는지 확인
+        Optional<CommentLike> optionalLike = commentLikeRepository.findByUserAndPost(user, post);
+
+        if (optionalLike.isPresent()) {
+            // [CASE 1] 이미 눌렀다면 -> 좋아요 취소
+            commentLikeRepository.delete(optionalLike.get()); // 1. like 테이블에서 삭제
+            post.decreaseLikeCount(); // 2. post 테이블의 카운트 -1 (Dirty Checking)
+            log.info("like");
+        } else {
+            // [CASE 2] 안 눌렀다면 -> 좋아요 등록
+            commentLikeRepository.save(new CommentLike(user, post)); // 1. like 테이블에 저장
+            post.increaseLikeCount(); // 2. post 테이블의 카운트 +1 (Dirty Checking)
+            log.info("dislike");
+        }
     }
 }
