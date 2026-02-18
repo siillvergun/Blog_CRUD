@@ -130,12 +130,12 @@ public class PostService {
             // [CASE 1] 이미 눌렀다면 -> 좋아요 취소
             postLikeRepository.delete(optionalLike.get()); // 1. like 테이블에서 삭제
             post.decreaseLikeCount(); // 2. post 테이블의 카운트 -1 (Dirty Checking)
-            log.info("dislike");
+            log.info("게시글 좋아요 취소 - user: {}, comment: {}", userId, postId);
         } else {
             // [CASE 2] 안 눌렀다면 -> 좋아요 등록
             postLikeRepository.save(new PostLike(user, post)); // 1. like 테이블에 저장
             post.increaseLikeCount(); // 2. post 테이블의 카운트 +1 (Dirty Checking)
-            log.info("like");
+            log.info("게시글 좋아요 등록 - user: {}, comment: {}", userId, postId);
         }
     }
 }

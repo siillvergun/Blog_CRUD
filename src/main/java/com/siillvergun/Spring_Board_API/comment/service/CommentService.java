@@ -85,23 +85,22 @@ public class CommentService {
     @Transactional
     public void toggleLike(Long userId, Long postId, Long commentId) {
         // 1. 게시글과 유저 존재 확인
-        Post post = postService.findByPostId(postId);
         User user = userService.findUserById(userId);
         Comment comment = findByCommentId(commentId);
 
         // 2. 이미 좋아요를 눌렀는지 확인
-        Optional<CommentLike> optionalLike = commentLikeRepository.findByUserAndPost(user, post);
+        Optional<CommentLike> optionalLike = commentLikeRepository.findByUserAndComment(user, comment);
 
         if (optionalLike.isPresent()) {
             // [CASE 1] 이미 눌렀다면 -> 좋아요 취소
             commentLikeRepository.delete(optionalLike.get()); // 1. like 테이블에서 삭제
             comment.decreaseLikeCount(); // 2. post 테이블의 카운트 -1 (Dirty Checking)
-            log.info("dislike");
+            log.info("댓글 좋아요 취소 - user: {}, comment: {}", userId, commentId);
         } else {
             // [CASE 2] 안 눌렀다면 -> 좋아요 등록
             commentLikeRepository.save(new CommentLike(user, comment)); // 1. like 테이블에 저장
             comment.increaseLikeCount(); // 2. post 테이블의 카운트 +1 (Dirty Checking)
-            log.info("like");
+            log.info("댓글 좋아요 등록 - user: {}, comment: {}", userId, commentId);
         }
     }
 }

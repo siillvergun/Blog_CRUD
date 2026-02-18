@@ -11,24 +11,24 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Entity
 @Table(
-        name = "comment_like",
+        name = "comment_likes",
         uniqueConstraints =
         @UniqueConstraint(
-                name = "uk_comment_like_user_post",
-                columnNames = {"user_id", "post_id"}
+                name = "uk_comment_like_user_comment",
+                columnNames = {"user_id", "comment_id"}
         )
 )
 public class CommentLike {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long comment_id;
+    private Long likeId;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "comments_id", nullable = false)
+    @JoinColumn(name = "comment_id", nullable = false)
     private Comment comment;
 
     @Builder
