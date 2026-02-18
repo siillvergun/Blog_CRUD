@@ -58,7 +58,6 @@ public class Post extends BaseEntity {
         this.title = title;
         this.content = content;
         this.img = img;
-        this.likeCount = likeCount;
     }
 
     public void updateTitle(String title) {

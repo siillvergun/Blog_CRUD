@@ -5,7 +5,9 @@ import com.siillvergun.Spring_Board_API.post.entity.PostLike;
 import com.siillvergun.Spring_Board_API.user.entity.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 
+import java.util.Optional;
+
 public interface PostLikeRepository extends JpaRepository<PostLike, Long> {
     // 1. 내가 눌렀는지 확인 (Boolean)
-    boolean existsByUserAndPost(User user, Post post);
+    Optional<PostLike> findByUserAndPost(User user, Post post);
 }

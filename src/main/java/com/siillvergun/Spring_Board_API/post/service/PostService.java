@@ -5,6 +5,7 @@ import com.siillvergun.Spring_Board_API.global.ErrorCode;
 import com.siillvergun.Spring_Board_API.post.dto.PostRequestDto;
 import com.siillvergun.Spring_Board_API.post.dto.PostResponseDto;
 import com.siillvergun.Spring_Board_API.post.entity.Post;
+import com.siillvergun.Spring_Board_API.post.entity.PostLike;
 import com.siillvergun.Spring_Board_API.post.repository.PostLikeRepository;
 import com.siillvergun.Spring_Board_API.post.repository.PostRepository;
 import com.siillvergun.Spring_Board_API.user.entity.User;
@@ -15,6 +16,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
 
 import static com.siillvergun.Spring_Board_API.global.ErrorCode.POST_NOT_FOUND;
 
@@ -115,6 +117,23 @@ public class PostService {
 
     @Transactional
     public void toggleLike(Long userId, Long postId) {
+        // 1. 게시글과 유저 존재 확인
+        Post post = findByPostId(postId);
+        User user = userService.findUserById(userId);
 
+        // 2. 이미 좋아요를 눌렀는지 확인
+        Optional<PostLike> optionalLike = postLikeRepository.findByUserAndPost(user, post);
+
+        if (optionalLike.isPresent()) {
+            // [CASE 1] 이미 눌렀다면 -> 좋아요 취소
+            postLikeRepository.delete(optionalLike.get()); // 1. like 테이블에서 삭제
+            post.decreaseLikeCount(); // 2. post 테이블의 카운트 -1 (Dirty Checking)
+            log.info("on like");
+        } else {
+            // [CASE 2] 안 눌렀다면 -> 좋아요 등록
+            postLikeRepository.save(new PostLike(user, post)); // 1. like 테이블에 저장
+            post.increaseLikeCount(); // 2. post 테이블의 카운트 +1 (Dirty Checking)
+            log.info("off like");
+        }
     }
 }
