@@ -16,7 +16,6 @@ public class PostResponseDto {
     private Long postId;
     private String title;
     private String content;
-    private String img;
     private String authorNickname;
     private Long likeCount;
     private LocalDateTime createdAt;
@@ -27,7 +26,6 @@ public class PostResponseDto {
                 .postId(post.getPostId())
                 .title(post.getTitle())
                 .content(post.getContent())
-                .img(post.getImg())
                 .authorNickname(post.getAuthor().getNickname()) // 이때 user조회 쿼리 보냄 -> 총 N개의 쿼리가 발생
                 .likeCount(post.getLikeCount())
                 .createdAt(post.getCreatedAt())

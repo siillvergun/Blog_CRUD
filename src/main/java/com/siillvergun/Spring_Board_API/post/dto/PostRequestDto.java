@@ -15,13 +15,11 @@ import lombok.NoArgsConstructor;
 public class PostRequestDto {
     private String title;
     private String content;
-    private String img;
 
     public Post toEntity(User author) {
         return Post.builder()
                 .title(this.title)
                 .content(this.content)
-                .img(this.img)
                 .author(author)
                 .build();
     }

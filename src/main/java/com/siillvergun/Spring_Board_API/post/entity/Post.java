@@ -41,9 +41,6 @@ public class Post extends BaseEntity {
     @Column(length = 1000, nullable = false)
     private String content;
 
-    @Column(length = 200)
-    private String img;
-
     @Column(nullable = false)
     @ColumnDefault("0") // DB에 기본값 0으로 설정
     private Long likeCount = 0L; // 자바 객체에서도 기본값 0
@@ -53,11 +50,10 @@ public class Post extends BaseEntity {
 
     // 게시글은 postId를 몰라도 되기 때문에 클래스에 @빌더를 다는게 아니라 생성자를 따로 만듦
     @Builder
-    public Post(User author, String title, String content, String img, Long likeCount) {
+    public Post(User author, String title, String content) {
         this.author = author;
         this.title = title;
         this.content = content;
-        this.img = img;
     }
 
     public void updateTitle(String title) {
