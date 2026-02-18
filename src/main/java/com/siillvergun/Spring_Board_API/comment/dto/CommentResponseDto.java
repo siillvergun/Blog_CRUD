@@ -17,6 +17,7 @@ public class CommentResponseDto {
     private String title;
     private String content;
     private String authorNickname;
+    private Long likeCount;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 
@@ -26,6 +27,7 @@ public class CommentResponseDto {
                 .title(comment.getPost().getTitle())
                 .authorNickname(comment.getAuthor().getNickname())
                 .content(comment.getContent())
+                .likeCount(comment.getLikeCount())
                 .createdAt(comment.getCreatedAt())
                 .updatedAt(comment.getUpdatedAt()).build();
     }

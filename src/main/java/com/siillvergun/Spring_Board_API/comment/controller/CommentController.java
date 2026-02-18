@@ -48,4 +48,15 @@ public class CommentController {
         commentService.deleteComment(commentId);
         return ResponseEntity.noContent().build();
     }
+
+
+    @PatchMapping("/{comment}/like")
+    public ResponseEntity<Void> toggleCommentLike(
+            @PathVariable Long commendId,
+            @RequestParam Long userId,
+            @RequestParam Long postId
+    ) {
+        commentService.toggleLike(userId, postId, commendId);
+        return ResponseEntity.ok().build();
+    }
 }

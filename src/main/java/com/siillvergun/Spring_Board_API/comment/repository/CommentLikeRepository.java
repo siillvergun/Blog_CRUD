@@ -1,5 +1,6 @@
 package com.siillvergun.Spring_Board_API.comment.repository;
 
+import com.siillvergun.Spring_Board_API.comment.entity.Comment;
 import com.siillvergun.Spring_Board_API.comment.entity.CommentLike;
 import com.siillvergun.Spring_Board_API.post.entity.Post;
 import com.siillvergun.Spring_Board_API.user.entity.User;
@@ -9,4 +10,6 @@ import java.util.Optional;
 
 public interface CommentLikeRepository extends JpaRepository<CommentLike, Long> {
     Optional<CommentLike> findByUserAndPost(User user, Post post);
+
+    void deleteByComment(Comment commentId);
 }

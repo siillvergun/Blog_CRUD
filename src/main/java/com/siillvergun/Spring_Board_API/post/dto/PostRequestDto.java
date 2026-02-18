@@ -11,7 +11,6 @@ import lombok.NoArgsConstructor;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-
 // 요청Dto는 클라이언트가 서버에게 처리를 요청할 떄 보내는 데이터이다.
 public class PostRequestDto {
     private String title;
