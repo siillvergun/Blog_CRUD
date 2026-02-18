@@ -50,7 +50,7 @@ public class CommentController {
     }
 
 
-    @PatchMapping("/{commentId}/like")
+    @PostMapping("/{commentId}/like")
     public ResponseEntity<Void> toggleCommentLike(
             @PathVariable Long commentId,
             @RequestParam Long userId

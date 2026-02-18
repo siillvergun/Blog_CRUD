@@ -17,7 +17,7 @@ public class PostController {
     private final PostService postService;
 
     ///  게시글 생성
-    @PostMapping
+    @PostMapping("/{userId}")
     public ResponseEntity<PostResponseDto> createPost(
             @RequestBody PostRequestDto postRequestDto,
             @PathVariable Long userId
@@ -74,7 +74,7 @@ public class PostController {
             @PathVariable Long postId,
             @RequestParam Long userId
     ) {
-        postService.toggleLike(postId, userId);
+        postService.toggleLike(userId, postId);
         return ResponseEntity.ok().build();
     }
 }
