@@ -73,17 +73,17 @@ public class CommentService {
 
     // Delete
     @Transactional
-    public void deleteComment(Long commendId) {
-        Comment comment = findByCommentId(commendId);
+    public void deleteComment(Long commentId) {
+        Comment comment = findByCommentId(commentId);
 
         commentLikeRepository.deleteByComment(comment);
 
         commentRepository.delete(comment);
-        log.warn("댓글 삭제 실행 - ID: {}", commendId);
+        log.warn("댓글 삭제 실행 - ID: {}", commentId);
     }
 
     @Transactional
-    public void toggleLike(Long userId, Long postId, Long commentId) {
+    public void toggleLike(Long userId, Long commentId) {
         // 1. 게시글과 유저 존재 확인
         User user = userService.findUserById(userId);
         Comment comment = findByCommentId(commentId);

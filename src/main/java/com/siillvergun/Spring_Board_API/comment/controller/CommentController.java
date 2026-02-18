@@ -52,11 +52,11 @@ public class CommentController {
 
     @PatchMapping("/{comment}/like")
     public ResponseEntity<Void> toggleCommentLike(
-            @PathVariable Long commendId,
+            @PathVariable Long commentId,
             @RequestParam Long userId,
             @RequestParam Long postId
     ) {
-        commentService.toggleLike(userId, postId, commendId);
+        commentService.toggleLike(userId, commentId);
         return ResponseEntity.ok().build();
     }
 }
