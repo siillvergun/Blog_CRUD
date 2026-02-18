@@ -16,11 +16,11 @@ import java.util.List;
 public class CommentController {
     private final CommentService commentService;
 
-    @PostMapping
+    @PostMapping("/{userId}/{postId}")
     public ResponseEntity<CommentResponseDto> createComment(
             @RequestBody CommentRequestDto commentRequestDto,
-            @RequestParam Long userId,
-            @RequestParam Long postId
+            @PathVariable Long userId,
+            @PathVariable Long postId
     ) {
         CommentResponseDto response = commentService.createComment(commentRequestDto, userId, postId);
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
@@ -50,11 +50,10 @@ public class CommentController {
     }
 
 
-    @PatchMapping("/{comment}/like")
+    @PatchMapping("/{commentId}/like")
     public ResponseEntity<Void> toggleCommentLike(
             @PathVariable Long commentId,
-            @RequestParam Long userId,
-            @RequestParam Long postId
+            @RequestParam Long userId
     ) {
         commentService.toggleLike(userId, commentId);
         return ResponseEntity.ok().build();
