@@ -1,7 +1,7 @@
 package com.siillvergun.Spring_Board_API.user.service;
 
-import com.siillvergun.Spring_Board_API.global.CustomException;
-import com.siillvergun.Spring_Board_API.global.ErrorCode;
+import com.siillvergun.Spring_Board_API.global.error.CustomException;
+import com.siillvergun.Spring_Board_API.global.error.ErrorCode;
 import com.siillvergun.Spring_Board_API.user.dto.UserJoinRequestDto;
 import com.siillvergun.Spring_Board_API.user.dto.UserPasswordUpdateRequestDto;
 import com.siillvergun.Spring_Board_API.user.dto.UserProfileUpdateRequestDto;

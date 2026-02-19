@@ -1,6 +1,6 @@
-package com.siillvergun.Spring_Board_API.user.dto;
+package com.siillvergun.Spring_Board_API.global.error.dto;
 
-import com.siillvergun.Spring_Board_API.global.ErrorCode;
+import com.siillvergun.Spring_Board_API.global.error.ErrorCode;
 import lombok.Builder;
 import lombok.Getter;
 

@@ -31,10 +31,10 @@ public class UserController {
     }
 
 
-    @GetMapping("/{id}")
+    @GetMapping("/{userId}")
     // @PathVariable : URL 경로에 들어있는 값(예: /users/1에서 1)을 변수로 가져올 때 사용합니다.
-    public ResponseEntity<UserResponseDto> getUserById(@PathVariable Long id) {
-        UserResponseDto response = userService.getUserResponse(id);
+    public ResponseEntity<UserResponseDto> getUserById(@PathVariable Long userId) {
+        UserResponseDto response = userService.getUserResponse(userId);
         return ResponseEntity.ok(response);
     }
 
@@ -50,25 +50,29 @@ public class UserController {
 
 
     /// 회원 정보 수정
-    @PatchMapping("/{id}")
-    public ResponseEntity<UserResponseDto> updateProfile(@PathVariable Long id, @RequestBody UserProfileUpdateRequestDto updateRequest) {
-        UserResponseDto response = userService.updateProfile(id, updateRequest);
+    @PatchMapping("/{userId}")
+    public ResponseEntity<UserResponseDto> updateProfile(
+            @PathVariable Long userId,
+            @RequestBody UserProfileUpdateRequestDto updateRequest) {
+        UserResponseDto response = userService.updateProfile(userId, updateRequest);
         return ResponseEntity.ok(response);
     }
 
 
     /// 패스워드 수정(패스워드는 사용자에게 넘겨주지 않음)
-    @PatchMapping("/password/{id}")
-    public ResponseEntity<Void> updatePassword(@PathVariable Long id, @RequestBody UserPasswordUpdateRequestDto updateRequest) {
-        userService.updatePassword(id, updateRequest);
+    @PatchMapping("/password/{userId}")
+    public ResponseEntity<Void> updatePassword(
+            @PathVariable Long userId,
+            @RequestBody UserPasswordUpdateRequestDto updateRequest) {
+        userService.updatePassword(userId, updateRequest);
         return ResponseEntity.noContent().build();
     }
 
 
     /// 회원 삭제
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteUser(@PathVariable Long id) {
-        userService.deleteUser(id);
+    @DeleteMapping("/{userId}")
+    public ResponseEntity<Void> deleteUser(@PathVariable Long userId) {
+        userService.deleteUser(userId);
         return ResponseEntity.noContent().build();
     }
 }

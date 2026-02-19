@@ -1,7 +1,7 @@
 package com.siillvergun.Spring_Board_API.post.service;
 
-import com.siillvergun.Spring_Board_API.global.CustomException;
-import com.siillvergun.Spring_Board_API.global.ErrorCode;
+import com.siillvergun.Spring_Board_API.global.error.CustomException;
+import com.siillvergun.Spring_Board_API.global.error.ErrorCode;
 import com.siillvergun.Spring_Board_API.post.dto.PostRequestDto;
 import com.siillvergun.Spring_Board_API.post.dto.PostResponseDto;
 import com.siillvergun.Spring_Board_API.post.entity.Post;
@@ -18,7 +18,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 import java.util.Optional;
 
-import static com.siillvergun.Spring_Board_API.global.ErrorCode.POST_NOT_FOUND;
+import static com.siillvergun.Spring_Board_API.global.error.ErrorCode.POST_NOT_FOUND;
 
 
 @Service

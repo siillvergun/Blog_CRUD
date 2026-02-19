@@ -6,7 +6,7 @@ import com.siillvergun.Spring_Board_API.comment.entity.Comment;
 import com.siillvergun.Spring_Board_API.comment.entity.CommentLike;
 import com.siillvergun.Spring_Board_API.comment.repository.CommentLikeRepository;
 import com.siillvergun.Spring_Board_API.comment.repository.CommentRepository;
-import com.siillvergun.Spring_Board_API.global.CustomException;
+import com.siillvergun.Spring_Board_API.global.error.CustomException;
 import com.siillvergun.Spring_Board_API.post.entity.Post;
 import com.siillvergun.Spring_Board_API.post.service.PostService;
 import com.siillvergun.Spring_Board_API.user.entity.User;
@@ -19,7 +19,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 import java.util.Optional;
 
-import static com.siillvergun.Spring_Board_API.global.ErrorCode.POST_NOT_FOUND;
+import static com.siillvergun.Spring_Board_API.global.error.ErrorCode.POST_NOT_FOUND;
 
 @Service
 @RequiredArgsConstructor
