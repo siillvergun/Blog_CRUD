@@ -3,8 +3,8 @@
 <head>
     <meta charset="utf-8"/>
     <meta content="width=device-width, initial-scale=1" name="viewport"/>
-    <title>My Simple Blog</title>
-    <meta content="간단한 블로그 템플릿" name="description"/>
+    <title>Spring Board Blog</title>
+    <meta content="Spring Board API를 사용한 블로그" name="description"/>
     <style>
         :root {
           --bg: #0b0d10;
@@ -16,6 +16,8 @@
           --accent2: #7dffb2;
           --radius: 14px;
           --shadow: 0 10px 30px rgba(0,0,0,0.35);
+          --error: #ff6b6b;
+          --success: #51cf66;
         }
         * { box-sizing: border-box; }
         html, body { height: 100%; }
@@ -56,36 +58,22 @@
           box-shadow: 0 8px 20px rgba(122,162,255,0.25);
         }
         .navlinks { display: flex; align-items: center; gap: 14px; }
-        .navlinks a {
+        .navlinks a, .navlinks button {
           padding: 8px 10px;
           border-radius: 10px;
           color: var(--muted);
-        }
-        .navlinks a:hover { background: rgba(255,255,255,0.06); color: var(--text); }
-        .search {
-          display: flex; align-items: center; gap: 8px;
-          padding: 8px 10px;
-          border: 1px solid var(--line);
-          border-radius: 12px;
-          background: rgba(255,255,255,0.03);
-          min-width: 240px;
-        }
-        .search input {
-          width: 100%;
-          border: 0;
-          outline: 0;
+          border: none;
           background: transparent;
-          color: var(--text);
+          cursor: pointer;
           font-size: 14px;
         }
-        .kbd {
-          font-size: 12px;
+        .navlinks a:hover, .navlinks button:hover { background: rgba(255,255,255,0.06); color: var(--text); }
+        .user-info {
+          display: flex;
+          align-items: center;
+          gap: 10px;
           color: var(--muted);
-          border: 1px solid var(--line);
-          padding: 2px 6px;
-          border-radius: 8px;
-          background: rgba(255,255,255,0.03);
-          user-select: none;
+          font-size: 14px;
         }
 
         /* Hero */
@@ -99,15 +87,6 @@
         }
         .hero h1 { margin: 0 0 8px; font-size: 28px; }
         .hero p { margin: 0; color: var(--muted); max-width: 70ch; }
-        .hero .chips { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 14px; }
-        .chip {
-          padding: 7px 10px;
-          border: 1px solid var(--line);
-          border-radius: 999px;
-          background: rgba(255,255,255,0.03);
-          color: var(--muted);
-          font-size: 13px;
-        }
 
         /* Layout */
         main {
@@ -119,7 +98,6 @@
         }
         @media (max-width: 920px) {
           main { grid-template-columns: 1fr; }
-          .search { min-width: 0; }
         }
 
         /* Cards */
@@ -165,7 +143,8 @@
           background: rgba(255,255,255,0.03);
           color: var(--muted);
         }
-        .post h3 { margin: 0 0 6px; font-size: 18px; }
+        .post h3 { margin: 0 0 6px; font-size: 18px; cursor: pointer; }
+        .post h3:hover { color: var(--accent); }
         .post p { margin: 0 0 10px; color: var(--muted); }
         .actions {
           display: flex;
@@ -185,37 +164,76 @@
           font-size: 14px;
           cursor: pointer;
           user-select: none;
+          transition: all 0.2s;
         }
         .btn:hover { background: rgba(255,255,255,0.06); }
         .btn.primary {
           border-color: rgba(122,162,255,0.45);
           background: rgba(122,162,255,0.12);
         }
-
-        /* Sidebar */
-        .list { display: grid; gap: 10px; }
-        .item {
-          padding: 12px;
-          border: 1px solid var(--line);
-          border-radius: 12px;
-          background: rgba(255,255,255,0.02);
+        .btn.primary:hover {
+          background: rgba(122,162,255,0.2);
         }
-        .item strong { display: block; font-size: 14px; margin-bottom: 4px; }
-        .item small { color: var(--muted); }
-        .footer {
-          margin: 22px 0 8px;
+        .btn.like {
+          border-color: rgba(255,107,107,0.45);
+          background: rgba(255,107,107,0.12);
+        }
+        .btn.like:hover {
+          background: rgba(255,107,107,0.2);
+        }
+        .btn.like.active {
+          border-color: var(--error);
+          background: rgba(255,107,107,0.25);
+        }
+        .btn.danger {
+          border-color: rgba(255,107,107,0.45);
+          background: rgba(255,107,107,0.12);
+          color: var(--error);
+        }
+        .btn.danger:hover {
+          background: rgba(255,107,107,0.2);
+        }
+
+        /* Forms */
+        .form-group {
+          margin-bottom: 16px;
+        }
+        .form-group label {
+          display: block;
+          margin-bottom: 6px;
+          font-size: 14px;
           color: var(--muted);
-          font-size: 13px;
-          text-align: center;
+        }
+        .form-group input,
+        .form-group textarea {
+          width: 100%;
+          padding: 10px 12px;
+          border: 1px solid var(--line);
+          border-radius: 10px;
+          background: rgba(255,255,255,0.03);
+          color: var(--text);
+          font-size: 14px;
+          font-family: inherit;
+        }
+        .form-group input:focus,
+        .form-group textarea:focus {
+          outline: none;
+          border-color: var(--accent);
+          background: rgba(255,255,255,0.05);
+        }
+        .form-group textarea {
+          min-height: 120px;
+          resize: vertical;
         }
 
-        /* Modal (simple) */
+        /* Modal */
         dialog {
           border: 1px solid var(--line);
           border-radius: 16px;
           background: #0f131c;
           color: var(--text);
           width: min(720px, calc(100% - 40px));
+          max-height: 90vh;
           box-shadow: 0 20px 60px rgba(0,0,0,0.6);
         }
         dialog::backdrop { background: rgba(0,0,0,0.55); }
@@ -227,7 +245,12 @@
           border-bottom: 1px solid var(--line);
         }
         .modal-head h3 { margin: 0; font-size: 16px; }
-        .modal-body { padding: 14px 16px 18px; color: var(--muted); }
+        .modal-body { 
+          padding: 14px 16px 18px; 
+          color: var(--muted);
+          max-height: calc(90vh - 100px);
+          overflow-y: auto;
+        }
         .close {
           border: 1px solid var(--line);
           border-radius: 10px;
@@ -236,6 +259,89 @@
           color: var(--text);
           cursor: pointer;
         }
+
+        /* Comments */
+        .comments-section {
+          margin-top: 20px;
+          padding-top: 20px;
+          border-top: 1px solid var(--line);
+        }
+        .comment {
+          padding: 12px 0;
+          border-bottom: 1px solid var(--line);
+        }
+        .comment:last-child { border-bottom: 0; }
+        .comment-header {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          margin-bottom: 6px;
+        }
+        .comment-author {
+          font-weight: 600;
+          font-size: 14px;
+          color: var(--text);
+        }
+        .comment-date {
+          font-size: 12px;
+          color: var(--muted);
+        }
+        .comment-content {
+          color: var(--muted);
+          font-size: 14px;
+          margin-bottom: 8px;
+        }
+        .comment-actions {
+          display: flex;
+          gap: 8px;
+        }
+        .comment-form {
+          margin-top: 16px;
+        }
+
+        /* Loading */
+        .loading {
+          text-align: center;
+          padding: 40px;
+          color: var(--muted);
+        }
+        .spinner {
+          display: inline-block;
+          width: 20px;
+          height: 20px;
+          border: 2px solid var(--line);
+          border-top-color: var(--accent);
+          border-radius: 50%;
+          animation: spin 0.6s linear infinite;
+        }
+        @keyframes spin {
+          to { transform: rotate(360deg); }
+        }
+
+        /* Error/Success messages */
+        .message {
+          padding: 12px 16px;
+          border-radius: 10px;
+          margin-bottom: 16px;
+          font-size: 14px;
+        }
+        .message.error {
+          background: rgba(255,107,107,0.15);
+          border: 1px solid rgba(255,107,107,0.3);
+          color: var(--error);
+        }
+        .message.success {
+          background: rgba(81,207,102,0.15);
+          border: 1px solid rgba(81,207,102,0.3);
+          color: var(--success);
+        }
+
+        /* Empty state */
+        .empty {
+          text-align: center;
+          padding: 40px;
+          color: var(--muted);
+        }
     </style>
 </head>
 <body>
@@ -243,35 +349,27 @@
     <div class="nav">
         <div class="brand">
             <div aria-hidden="true" class="logo"></div>
-            <div>My Simple Blog</div>
+            <div>Spring Board Blog</div>
         </div>
 
         <nav aria-label="메인 메뉴" class="navlinks">
-            <a href="#posts">글</a>
-            <a href="#about">소개</a>
-            <a href="#contact">문의</a>
+            <a href="#" onclick="showAllPosts(); return false;">전체 글 목록</a>
+            <a href="#" onclick="showMyPosts(); return false;">내 글 목록</a>
+            <button id="createPostBtn" onclick="openCreatePostModal()">글 작성</button>
+            <div class="user-info" id="userSection">
+                <button id="loginBtn" onclick="openLoginModal()">로그인</button>
+                <button id="registerBtn" onclick="openRegisterModal()">회원가입</button>
+            </div>
         </nav>
-
-        <div aria-label="검색" class="search" role="search">
-            <span style="opacity:.7">⌕</span>
-            <input autocomplete="off" id="searchInput" placeholder="제목/태그 검색" type="search"/>
-            <span class="kbd">Ctrl K</span>
-        </div>
     </div>
 </header>
 
 <div class="wrap">
-    <section class="hero" id="about">
-        <h1>기록을 남기는 가장 단순한 블로그</h1>
+    <section class="hero">
+        <h1>Spring Board Blog</h1>
         <p>
-            단일 HTML 파일로 동작하는 예시 템플릿입니다. 글 목록, 검색(프론트에서 필터), 간단한 모달(상세보기)을 제공합니다.
+            Spring Boot REST API를 사용한 블로그입니다. 글을 작성하고, 댓글을 달고, 좋아요를 눌러보세요.
         </p>
-        <div aria-label="태그" class="chips">
-            <span class="chip">#Spring</span>
-            <span class="chip">#Redis</span>
-            <span class="chip">#JPA</span>
-            <span class="chip">#DevLog</span>
-        </div>
     </section>
 
     <main>
@@ -279,204 +377,728 @@
         <section aria-label="글 목록" class="card" id="posts">
             <div class="card-header">
                 <h2>최근 글</h2>
-                <span id="resultCount">3 posts</span>
+                <span id="resultCount">0 posts</span>
             </div>
             <div class="card-body" id="postList">
-                <article class="post" data-tags="redis pubsub stream messaging" data-title="Redis Pub/Sub vs Stream">
-                    <div class="meta">
-                        <span class="badge">Redis</span>
-                        <span>2026-01-17</span>
-                        <span>·</span>
-                        <span>5 min</span>
-                    </div>
-                    <h3>Redis Pub/Sub vs Stream: 언제 무엇을 쓸까</h3>
-                    <p>
-                        유실 가능성, 소비자 그룹, 재처리 전략 관점에서 Pub/Sub과 Stream을 비교합니다.
-                    </p>
-                    <div class="actions">
-                        <button class="btn primary" data-open="1">자세히 보기</button>
-                        <a class="btn" href="#contact">문의</a>
-                    </div>
-                </article>
-
-                <article class="post" data-tags="spring aop logging" data-title="Spring AOP 로깅 패턴">
-                    <div class="meta">
-                        <span class="badge">Spring</span>
-                        <span>2026-01-16</span>
-                        <span>·</span>
-                        <span>4 min</span>
-                    </div>
-                    <h3>실무에서 자주 쓰는 AOP 로깅 패턴</h3>
-                    <p>
-                        Controller/Service 레이어의 실행 시간 측정, Request ID 전파, 예외 로깅을 정리합니다.
-                    </p>
-                    <div class="actions">
-                        <button class="btn primary" data-open="2">자세히 보기</button>
-                        <a class="btn" href="#contact">문의</a>
-                    </div>
-                </article>
-
-                <article class="post" data-tags="jpa n+1 fetch join" data-title="JPA N+1 문제 정리">
-                    <div class="meta">
-                        <span class="badge">JPA</span>
-                        <span>2026-01-15</span>
-                        <span>·</span>
-                        <span>6 min</span>
-                    </div>
-                    <h3>N+1 문제: 원인과 해결(Fetch Join, EntityGraph)</h3>
-                    <p>
-                        N+1이 발생하는 조건과, fetch join / batch size / post graph로 해결하는 흐름을 정리합니다.
-                    </p>
-                    <div class="actions">
-                        <button class="btn primary" data-open="3">자세히 보기</button>
-                        <a class="btn" href="#contact">문의</a>
-                    </div>
-                </article>
+                <div class="loading">
+                    <div class="spinner"></div>
+                    <div style="margin-top: 10px;">글을 불러오는 중...</div>
+                </div>
             </div>
         </section>
 
         <!-- Sidebar -->
         <aside aria-label="사이드바" class="card">
             <div class="card-header">
-                <h2>바로가기</h2>
-                <span>Quick</span>
+                <h2>정보</h2>
+                <span>Info</span>
             </div>
             <div class="card-body">
-                <div class="list">
-                    <div class="item">
-                        <strong>프로필</strong>
-                        <small>기록/회고/기술 정리를 위한 공간</small>
-                    </div>
-                    <div class="item">
-                        <strong>카테고리</strong>
-                        <small>Spring · Redis · JPA · Infra</small>
-                    </div>
-                    <div class="item" id="contact">
-                        <strong>문의</strong>
-                        <small>contact@example.com</small>
-                    </div>
+                <div style="color: var(--muted); font-size: 14px; line-height: 1.8;">
+                    <p><strong>사용 방법:</strong></p>
+                    <ol style="margin: 10px 0; padding-left: 20px;">
+                        <li>회원가입을 진행하세요</li>
+                        <li>로그인하면 글을 작성할 수 있습니다</li>
+                        <li>글을 클릭하면 상세 내용과 댓글을 볼 수 있습니다</li>
+                        <li>좋아요 버튼으로 글과 댓글에 반응하세요</li>
+                    </ol>
                 </div>
             </div>
         </aside>
     </main>
 
-    <div class="footer">
-        © <span id="year"></span> My Simple Blog. All rights reserved.
+    <div class="footer" style="margin: 22px 0 8px; color: var(--muted); font-size: 13px; text-align: center;">
+        © <span id="year"></span> Spring Board Blog. All rights reserved.
     </div>
 </div>
 
-<!-- Modals -->
-<dialog id="modal">
+<!-- Post Detail Modal -->
+<dialog id="postModal">
     <div class="modal-head">
-        <h3 id="modalTitle">제목</h3>
-        <button aria-label="닫기" class="close" id="closeModal">닫기</button>
+        <h3 id="postModalTitle">제목</h3>
+        <button aria-label="닫기" class="close" onclick="closePostModal()">닫기</button>
     </div>
-    <div class="modal-body" id="modalBody">
-        내용
+    <div class="modal-body" id="postModalBody">
+        <div id="postContent"></div>
+        <div class="comments-section" id="commentsSection">
+            <h4 style="margin: 0 0 16px; font-size: 16px;">댓글</h4>
+            <div id="commentsList"></div>
+            <div class="comment-form">
+                <div class="form-group">
+                    <textarea id="commentInput" placeholder="댓글을 입력하세요..." rows="3"></textarea>
+                </div>
+                <button class="btn primary" id="submitCommentBtn" type="button">댓글 작성</button>
+            </div>
+        </div>
+    </div>
+</dialog>
+
+<!-- Create Post Modal -->
+<dialog id="createPostModal">
+    <div class="modal-head">
+        <h3>새 글 작성</h3>
+        <button aria-label="닫기" class="close" onclick="closeCreatePostModal()">닫기</button>
+    </div>
+    <div class="modal-body">
+        <div id="createPostMessage"></div>
+        <div class="form-group">
+            <label for="postTitle">제목</label>
+            <input id="postTitle" placeholder="글 제목을 입력하세요" type="text">
+        </div>
+        <div class="form-group">
+            <label for="postContentInput">내용</label>
+            <textarea id="postContentInput" placeholder="글 내용을 입력하세요" rows="8"></textarea>
+        </div>
+        <button class="btn primary" onclick="submitPost()">작성하기</button>
+    </div>
+</dialog>
+
+<!-- Register Modal -->
+<dialog id="registerModal">
+    <div class="modal-head">
+        <h3>회원가입</h3>
+        <button aria-label="닫기" class="close" onclick="closeRegisterModal()">닫기</button>
+    </div>
+    <div class="modal-body">
+        <div id="registerMessage"></div>
+        <div class="form-group">
+            <label for="registerEmail">이메일</label>
+            <input id="registerEmail" placeholder="이메일을 입력하세요" type="email">
+        </div>
+        <div class="form-group">
+            <label for="registerNickname">닉네임</label>
+            <input id="registerNickname" placeholder="닉네임을 입력하세요" type="text">
+        </div>
+        <div class="form-group">
+            <label for="registerPassword">비밀번호</label>
+            <input id="registerPassword" placeholder="비밀번호를 입력하세요" type="password">
+        </div>
+        <button class="btn primary" onclick="submitRegister()">회원가입</button>
+    </div>
+</dialog>
+
+<!-- Login Modal -->
+<dialog id="loginModal">
+    <div class="modal-head">
+        <h3>로그인</h3>
+        <button aria-label="닫기" class="close" onclick="closeLoginModal()">닫기</button>
+    </div>
+    <div class="modal-body">
+        <div id="loginMessage"></div>
+        <p style="color: var(--muted); font-size: 14px; margin-bottom: 16px;">
+            현재 API에는 로그인 기능이 없습니다. 사용자 ID를 직접 입력하세요.
+        </p>
+        <div class="form-group">
+            <label for="loginUserId">사용자 ID</label>
+            <input id="loginUserId" placeholder="사용자 ID를 입력하세요" type="number">
+        </div>
+        <button class="btn primary" onclick="submitLogin()">로그인</button>
     </div>
 </dialog>
 
 <script>
-    const posts = [
-      {
-        id: 1,
-        title: "Redis Pub/Sub vs Stream: 언제 무엇을 쓸까",
-        body:
-          "Pub/Sub은 구독자가 없으면 메시지가 유실될 수 있고, 수신 확인(ack)이나 재처리 개념이 없습니다.\n" +
-          "반면 Redis Stream은 메시지를 저장하고, Consumer Group 기반으로 처리/재처리/리트라이 전략을 설계할 수 있습니다.\n\n" +
-          "간단 알림(유실 허용) -> Pub/Sub\n" +
-          "업무 이벤트(유실 불가, 재처리 필요) -> Stream(또는 MQ) 권장",
-        tags: ["redis", "pubsub", "stream"]
-      },
-      {
-        id: 2,
-        title: "실무에서 자주 쓰는 AOP 로깅 패턴",
-        body:
-          "AOP 로깅은 공통 관심사를 분리해 코드 중복을 줄이는 데 유용합니다.\n\n" +
-          "자주 쓰는 패턴:\n" +
-          "- 실행 시간 측정(@Around)\n" +
-          "- 예외 로깅(@AfterThrowing)\n" +
-          "- MDC로 Request ID/Trace ID 전파\n\n" +
-          "주의: 과도한 로그는 비용(저장/검색/성능)을 유발하므로 레벨과 샘플링 전략이 필요합니다.",
-        tags: ["spring", "aop", "logging"]
-      },
-      {
-        id: 3,
-        title: "N+1 문제: 원인과 해결(Fetch Join, EntityGraph)",
-        body:
-          "N+1은 연관관계 지연로딩 + 반복 접근 패턴에서 흔히 발생합니다.\n\n" +
-          "대표 해결:\n" +
-          "- JPQL fetch join\n" +
-          "- @EntityGraph\n" +
-          "- batch size 조정(hibernate.default_batch_fetch_size)\n\n" +
-          "목표는 '의도한 쿼리 수'로 데이터를 가져오도록 조회 전략을 통제하는 것입니다.",
-        tags: ["jpa", "n+1", "fetch", "join"]
-      }
-    ];
+    const API_BASE_URL = 'http://localhost:8080';
+    let currentUser = null;
+    let currentPostId = null;
+    let currentPostTitle = null;
+    let allPosts = [];
+    let allComments = [];
 
-    const $ = (sel) => document.querySelector(sel);
-    const $$ = (sel) => Array.from(document.querySelectorAll(sel));
-
-    // Footer year
-    $("#year").textContent = new Date().getFullYear();
-
-    // Search filter
-    const searchInput = $("#searchInput");
-    const postEls = $$("#postList .post");
-    const resultCount = $("#resultCount");
-
-    function applyFilter(q) {
-      const query = (q || "").trim().toLowerCase();
-      let shown = 0;
-
-      postEls.forEach((el) => {
-        const title = (el.dataset.title || "").toLowerCase();
-        const tags = (el.dataset.tags || "").toLowerCase();
-        const ok = !query || title.includes(query) || tags.includes(query);
-        el.style.display = ok ? "" : "none";
-        if (ok) shown++;
-      });
-
-      resultCount.textContent = `${shown} post${shown === 1 ? "" : "s"}`;
-    }
-
-    searchInput.addEventListener("input", (e) => applyFilter(e.target.value));
-
-    // Ctrl+K focus
-    window.addEventListener("keydown", (e) => {
-      const isMac = navigator.platform.toUpperCase().includes("MAC");
-      const isK = e.key.toLowerCase() === "k";
-      if ((isMac ? e.metaKey : e.ctrlKey) && isK) {
-        e.preventDefault();
-        searchInput.focus();
-      }
+    // Initialize
+    document.addEventListener('DOMContentLoaded', () => {
+        document.getElementById('year').textContent = new Date().getFullYear();
+        loadUser();
+        loadPosts();
+        loadComments();
+        
+        // 댓글 작성 버튼 이벤트 리스너
+        const submitCommentBtn = document.getElementById('submitCommentBtn');
+        if (submitCommentBtn) {
+            submitCommentBtn.addEventListener('click', createComment);
+        }
+        
+        // 댓글 입력 필드에서 Enter 키 지원 (Shift+Enter는 줄바꿈)
+        const commentInput = document.getElementById('commentInput');
+        if (commentInput) {
+            commentInput.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter' && !e.shiftKey) {
+                    e.preventDefault();
+                    createComment();
+                }
+            });
+        }
     });
 
-    // Modal open/close
-    const modal = $("#modal");
-    const modalTitle = $("#modalTitle");
-    const modalBody = $("#modalBody");
-
-    function openPost(id) {
-      const p = posts.find(x => x.id === id);
-      if (!p) return;
-      modalTitle.textContent = p.title;
-      modalBody.textContent = p.body;
-      modal.showModal();
+    // User Management
+    function loadUser() {
+        const userId = localStorage.getItem('userId');
+        const userNickname = localStorage.getItem('userNickname');
+        if (userId && userNickname) {
+            currentUser = { userId: parseInt(userId), nickname: userNickname };
+            updateUserUI();
+        }
     }
 
-    $$("#postList [data-open]").forEach((btn) => {
-      btn.addEventListener("click", () => openPost(Number(btn.dataset.open)));
+    function updateUserUI() {
+        const userSection = document.getElementById('userSection');
+        if (currentUser) {
+            userSection.innerHTML = `
+                <span>${currentUser.nickname} (ID: ${currentUser.userId})</span>
+                <button onclick="logout()">로그아웃</button>
+            `;
+            document.getElementById('createPostBtn').style.display = 'inline-flex';
+        } else {
+            userSection.innerHTML = `
+                <span>로그인 필요</span>
+                <button onclick="openLoginModal()">로그인</button>
+                <button onclick="openRegisterModal()">회원가입</button>
+            `;
+            document.getElementById('createPostBtn').style.display = 'none';
+        }
+    }
+
+    function logout() {
+        currentUser = null;
+        localStorage.removeItem('userId');
+        localStorage.removeItem('userNickname');
+        updateUserUI();
+        showMessage('로그아웃되었습니다.', 'success');
+    }
+
+    // Register
+    function openRegisterModal() {
+        document.getElementById('registerModal').showModal();
+        document.getElementById('registerMessage').innerHTML = '';
+    }
+
+    function closeRegisterModal() {
+        document.getElementById('registerModal').close();
+        document.getElementById('registerEmail').value = '';
+        document.getElementById('registerNickname').value = '';
+        document.getElementById('registerPassword').value = '';
+    }
+
+    async function submitRegister() {
+        const email = document.getElementById('registerEmail').value;
+        const nickname = document.getElementById('registerNickname').value;
+        const password = document.getElementById('registerPassword').value;
+
+        if (!email || !nickname || !password) {
+            showMessageInElement('registerMessage', '모든 필드를 입력해주세요.', 'error');
+            return;
+        }
+
+        try {
+            const response = await fetch(`${API_BASE_URL}/users/join`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ email, nickname, password })
+            });
+
+            if (response.ok) {
+                const user = await response.json();
+                currentUser = { userId: user.userId, nickname: user.nickname };
+                localStorage.setItem('userId', user.userId);
+                localStorage.setItem('userNickname', user.nickname);
+                updateUserUI();
+                closeRegisterModal();
+                showMessage('회원가입이 완료되었습니다!', 'success');
+            } else {
+                const error = await response.text();
+                showMessageInElement('registerMessage', '회원가입 실패: ' + error, 'error');
+            }
+        } catch (error) {
+            showMessageInElement('registerMessage', '오류: ' + error.message, 'error');
+        }
+    }
+
+    // Login
+    function openLoginModal() {
+        document.getElementById('loginModal').showModal();
+        document.getElementById('loginMessage').innerHTML = '';
+    }
+
+    function closeLoginModal() {
+        document.getElementById('loginModal').close();
+        document.getElementById('loginUserId').value = '';
+    }
+
+    async function submitLogin() {
+        const userId = parseInt(document.getElementById('loginUserId').value);
+
+        if (!userId) {
+            showMessageInElement('loginMessage', '사용자 ID를 입력해주세요.', 'error');
+            return;
+        }
+
+        try {
+            const response = await fetch(`${API_BASE_URL}/users/${userId}`);
+            if (response.ok) {
+                const user = await response.json();
+                currentUser = { userId: user.userId, nickname: user.nickname };
+                localStorage.setItem('userId', user.userId);
+                localStorage.setItem('userNickname', user.nickname);
+                updateUserUI();
+                closeLoginModal();
+                showMessage('로그인되었습니다!', 'success');
+            } else {
+                showMessageInElement('loginMessage', '사용자를 찾을 수 없습니다.', 'error');
+            }
+        } catch (error) {
+            showMessageInElement('loginMessage', '오류: ' + error.message, 'error');
+        }
+    }
+
+    // Posts
+    async function loadPosts() {
+        try {
+            const response = await fetch(`${API_BASE_URL}/posts`);
+            if (response.ok) {
+                allPosts = await response.json();
+                renderPosts();
+            } else {
+                document.getElementById('postList').innerHTML = '<div class="empty">글을 불러올 수 없습니다.</div>';
+            }
+        } catch (error) {
+            document.getElementById('postList').innerHTML = `<div class="empty">오류: ${error.message}</div>`;
+        }
+    }
+
+    function renderPosts() {
+        const postList = document.getElementById('postList');
+        const resultCount = document.getElementById('resultCount');
+
+        if (allPosts.length === 0) {
+            postList.innerHTML = '<div class="empty">아직 작성된 글이 없습니다.</div>';
+            resultCount.textContent = '0 posts';
+            return;
+        }
+
+        resultCount.textContent = `${allPosts.length} post${allPosts.length === 1 ? '' : 's'}`;
+
+        postList.innerHTML = allPosts.map(post => {
+            const date = new Date(post.createdAt).toLocaleDateString('ko-KR');
+            return `
+                <article class="post" data-post-id="${post.postId}">
+                    <div class="meta">
+                        <span class="badge">${post.authorNickname}</span>
+                        <span>${date}</span>
+                        <span>·</span>
+                        <span>❤️ ${post.likeCount || 0}</span>
+                    </div>
+                    <h3 onclick="openPostDetail(${post.postId})">${escapeHtml(post.title)}</h3>
+                    <p>${escapeHtml(post.content.substring(0, 150))}${post.content.length > 150 ? '...' : ''}</p>
+                    <div class="actions">
+                        <button class="btn primary" onclick="openPostDetail(${post.postId})">자세히 보기</button>
+                        ${currentUser ? `<button class="btn like" onclick="togglePostLike(${post.postId})">❤️ 좋아요</button>` : ''}
+                    </div>
+                </article>
+            `;
+        }).join('');
+    }
+
+    // 전체 글 목록 보기
+    function showAllPosts() {
+        loadPosts();
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    // 내 글 목록 보기
+    async function showMyPosts() {
+        if (!currentUser) {
+            showMessage('로그인이 필요합니다.', 'error');
+            openLoginModal();
+            return;
+        }
+        
+        try {
+            const response = await fetch(`${API_BASE_URL}/posts/user/${currentUser.userId}`);
+            if (response.ok) {
+                allPosts = await response.json();
+                renderPosts();
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            } else {
+                document.getElementById('postList').innerHTML = '<div class="empty">글을 불러올 수 없습니다.</div>';
+            }
+        } catch (error) {
+            document.getElementById('postList').innerHTML = `<div class="empty">오류: ${error.message}</div>`;
+        }
+    }
+
+    // Create Post
+    function openCreatePostModal() {
+        if (!currentUser) {
+            showMessage('로그인이 필요합니다.', 'error');
+            openLoginModal();
+            return;
+        }
+        document.getElementById('createPostModal').showModal();
+        document.getElementById('createPostMessage').innerHTML = '';
+    }
+
+    function closeCreatePostModal() {
+        document.getElementById('createPostModal').close();
+        document.getElementById('postTitle').value = '';
+        document.getElementById('postContentInput').value = '';
+    }
+
+    async function submitPost() {
+        if (!currentUser) {
+            showMessage('로그인이 필요합니다.', 'error');
+            return;
+        }
+
+        const title = document.getElementById('postTitle').value;
+        const content = document.getElementById('postContentInput').value;
+
+        if (!title || !content) {
+            showMessageInElement('createPostMessage', '제목과 내용을 모두 입력해주세요.', 'error');
+            return;
+        }
+
+        try {
+            const response = await fetch(`${API_BASE_URL}/posts/${currentUser.userId}`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ title, content })
+            });
+
+            if (response.ok) {
+                closeCreatePostModal();
+                loadPosts();
+                showMessage('글이 작성되었습니다!', 'success');
+            } else {
+                const error = await response.text();
+                showMessageInElement('createPostMessage', '작성 실패: ' + error, 'error');
+            }
+        } catch (error) {
+            showMessageInElement('createPostMessage', '오류: ' + error.message, 'error');
+        }
+    }
+
+    // Post Detail
+    async function openPostDetail(postId) {
+        currentPostId = postId;
+        const post = allPosts.find(p => p.postId === postId);
+        if (!post) return;
+        currentPostTitle = post.title;
+
+        document.getElementById('postModalTitle').textContent = post.title;
+        document.getElementById('postContent').innerHTML = `
+            <div style="margin-bottom: 20px;">
+                <div class="meta" style="margin-bottom: 16px;">
+                    <span class="badge">${post.authorNickname}</span>
+                    <span>${new Date(post.createdAt).toLocaleString('ko-KR')}</span>
+                    <span>·</span>
+                    <span>❤️ ${post.likeCount || 0}</span>
+                </div>
+                <div style="white-space: pre-wrap; line-height: 1.8;">${escapeHtml(post.content)}</div>
+                <div style="display: flex; gap: 10px; margin-top: 16px;">
+                    ${currentUser ? `<button class="btn like" onclick="togglePostLike(${post.postId}); loadPostDetail(${post.postId})">❤️ 좋아요</button>` : ''}
+                    ${currentUser && post.authorNickname === currentUser.nickname ? `<button class="btn danger" onclick="deletePost(${post.postId})">🗑️ 삭제</button>` : ''}
+                </div>
+            </div>
+        `;
+
+        loadPostComments(postId);
+        const modal = document.getElementById('postModal');
+        modal.showModal();
+        
+        // 모달이 열린 후 댓글 입력 필드에 포커스
+        setTimeout(() => {
+            const commentInput = document.getElementById('commentInput');
+            if (commentInput) {
+                commentInput.focus();
+            }
+        }, 100);
+    }
+
+    function closePostModal() {
+        document.getElementById('postModal').close();
+        currentPostId = null;
+        currentPostTitle = null;
+    }
+
+    // Comments
+    async function loadComments() {
+        try {
+            const response = await fetch(`${API_BASE_URL}/comments`);
+            if (response.ok) {
+                allComments = await response.json();
+            }
+        } catch (error) {
+            console.error('Failed to load comments:', error);
+        }
+    }
+
+    async function loadPostComments(postId) {
+        const commentsList = document.getElementById('commentsList');
+        const post = allPosts.find(p => p.postId === postId);
+        if (!post) {
+            console.warn('Post not found:', postId);
+            commentsList.innerHTML = '<div class="empty">게시글을 찾을 수 없습니다.</div>';
+            return;
+        }
+
+        // 댓글 목록이 아직 로드되지 않았다면 먼저 로드
+        if (!allComments || allComments.length === 0) {
+            await loadComments();
+        }
+
+        // 제목으로 댓글 필터링 (정확한 일치)
+        const postComments = allComments.filter(c => {
+            const match = c.title && post.title && c.title.trim() === post.title.trim();
+            if (!match && c.title) {
+                console.debug('Comment title mismatch:', { commentTitle: c.title, postTitle: post.title });
+            }
+            return match;
+        });
+
+        console.log(`Found ${postComments.length} comments for post ${postId} (${post.title})`);
+
+        if (postComments.length === 0) {
+            commentsList.innerHTML = '<div class="empty">아직 댓글이 없습니다.</div>';
+            return;
+        }
+
+        commentsList.innerHTML = postComments.map(comment => {
+            const date = new Date(comment.createdAt).toLocaleString('ko-KR');
+            const isMyComment = currentUser && comment.authorNickname === currentUser.nickname;
+            return `
+                <div class="comment">
+                    <div class="comment-header">
+                        <span class="comment-author">${escapeHtml(comment.authorNickname)}</span>
+                        <span class="comment-date">${date}</span>
+                    </div>
+                    <div class="comment-content">${escapeHtml(comment.content)}</div>
+                    <div class="comment-actions">
+                        ${currentUser ? `<button class="btn like" onclick="toggleCommentLike(${comment.commentId}); loadPostComments(${postId})" style="font-size: 12px; padding: 6px 10px;">❤️ ${comment.likeCount || 0}</button>` : `<span style="font-size: 12px; color: var(--muted);">❤️ ${comment.likeCount || 0}</span>`}
+                        ${isMyComment ? `<button class="btn danger" onclick="deleteComment(${comment.commentId}, ${postId})" style="font-size: 12px; padding: 6px 10px;">🗑️ 삭제</button>` : ''}
+                    </div>
+                </div>
+            `;
+        }).join('');
+    }
+
+    async function createComment() {
+        console.log('createComment function called');
+        console.log('Current user:', currentUser);
+        console.log('Current post ID:', currentPostId);
+        
+        if (!currentUser) {
+            console.warn('User not logged in');
+            showMessage('로그인이 필요합니다.', 'error');
+            return;
+        }
+
+        if (!currentPostId) {
+            console.error('currentPostId is null');
+            showMessage('게시글 정보를 찾을 수 없습니다.', 'error');
+            return;
+        }
+
+        const content = document.getElementById('commentInput').value;
+        if (!content || !content.trim()) {
+            showMessage('댓글 내용을 입력해주세요.', 'error');
+            return;
+        }
+
+        const url = `${API_BASE_URL}/comments/${currentUser.userId}/${currentPostId}`;
+        const requestBody = { content: content.trim() };
+        
+        console.log('Creating comment:', { url, userId: currentUser.userId, postId: currentPostId, content: requestBody.content });
+
+        try {
+            const response = await fetch(url, {
+                method: 'POST',
+                headers: { 
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(requestBody)
+            });
+
+            console.log('Response status:', response.status, response.statusText);
+
+            if (response.ok) {
+                const commentData = await response.json();
+                console.log('Comment created:', commentData);
+                
+                document.getElementById('commentInput').value = '';
+                
+                // 댓글 목록을 다시 불러온 후 화면 업데이트
+                await loadComments();
+                await loadPostComments(currentPostId);
+                
+                showMessage('댓글이 작성되었습니다!', 'success');
+            } else {
+                let errorText;
+                try {
+                    errorText = await response.text();
+                } catch (e) {
+                    errorText = `HTTP ${response.status}: ${response.statusText}`;
+                }
+                console.error('Comment creation failed:', response.status, errorText);
+                showMessage('댓글 작성 실패: ' + errorText, 'error');
+            }
+        } catch (error) {
+            console.error('Comment creation error:', error);
+            showMessage('오류: ' + error.message, 'error');
+        }
+    }
+
+    // Like
+    async function togglePostLike(postId) {
+        if (!currentUser) {
+            showMessage('로그인이 필요합니다.', 'error');
+            return;
+        }
+
+        try {
+            const response = await fetch(`${API_BASE_URL}/posts/${postId}/like?userId=${currentUser.userId}`, {
+                method: 'POST'
+            });
+
+            if (response.ok) {
+                await loadPosts();
+                if (currentPostId === postId) {
+                    loadPostDetail(postId);
+                }
+            }
+        } catch (error) {
+            console.error('Failed to toggle like:', error);
+        }
+    }
+
+    async function toggleCommentLike(commentId) {
+        if (!currentUser) {
+            showMessage('로그인이 필요합니다.', 'error');
+            return;
+        }
+
+        try {
+            const response = await fetch(`${API_BASE_URL}/comments/${commentId}/like?userId=${currentUser.userId}`, {
+                method: 'POST'
+            });
+
+            if (response.ok) {
+                await loadComments();
+                if (currentPostId) {
+                    loadPostComments(currentPostId);
+                }
+            }
+        } catch (error) {
+            console.error('Failed to toggle comment like:', error);
+        }
+    }
+
+    async function loadPostDetail(postId) {
+        await loadPosts();
+        openPostDetail(postId);
+    }
+
+    // Delete Post
+    async function deletePost(postId) {
+        if (!currentUser) {
+            showMessage('로그인이 필요합니다.', 'error');
+            return;
+        }
+
+        if (!confirm('정말 이 게시글을 삭제하시겠습니까?')) {
+            return;
+        }
+
+        try {
+            const response = await fetch(`${API_BASE_URL}/posts/${postId}?userId=${currentUser.userId}`, {
+                method: 'DELETE'
+            });
+
+            if (response.ok || response.status === 204) {
+                showMessage('게시글이 삭제되었습니다.', 'success');
+                closePostModal();
+                await showMyPosts(); // 내 글 목록 새로고침
+            } else {
+                const errorText = await response.text();
+                showMessage('게시글 삭제 실패: ' + errorText, 'error');
+            }
+        } catch (error) {
+            console.error('Failed to delete post:', error);
+            showMessage('오류: ' + error.message, 'error');
+        }
+    }
+
+    // Delete Comment
+    async function deleteComment(commentId, postId) {
+        if (!currentUser) {
+            showMessage('로그인이 필요합니다.', 'error');
+            return;
+        }
+
+        if (!confirm('정말 이 댓글을 삭제하시겠습니까?')) {
+            return;
+        }
+
+        try {
+            const response = await fetch(`${API_BASE_URL}/comments/${commentId}`, {
+                method: 'DELETE'
+            });
+
+            if (response.ok || response.status === 204) {
+                showMessage('댓글이 삭제되었습니다.', 'success');
+                await loadComments();
+                await loadPostComments(postId);
+            } else {
+                const errorText = await response.text();
+                showMessage('댓글 삭제 실패: ' + errorText, 'error');
+            }
+        } catch (error) {
+            console.error('Failed to delete comment:', error);
+            showMessage('오류: ' + error.message, 'error');
+        }
+    }
+
+    // Utility
+    function escapeHtml(text) {
+        const div = document.createElement('div');
+        div.textContent = text;
+        return div.innerHTML;
+    }
+
+    function showMessage(message, type) {
+        const messageDiv = document.createElement('div');
+        messageDiv.className = `message ${type}`;
+        messageDiv.textContent = message;
+        document.querySelector('.wrap').insertBefore(messageDiv, document.querySelector('.hero'));
+        setTimeout(() => messageDiv.remove(), 5000);
+    }
+
+    function showMessageInElement(elementId, message, type) {
+        const element = document.getElementById(elementId);
+        element.innerHTML = `<div class="message ${type}">${message}</div>`;
+    }
+
+    // Modal close on backdrop click
+    document.getElementById('postModal').addEventListener('click', (e) => {
+        if (e.target === document.getElementById('postModal')) {
+            closePostModal();
+        }
     });
 
-    $("#closeModal").addEventListener("click", () => modal.close());
-    modal.addEventListener("click", (e) => {
-      // 바깥 클릭 시 닫기
-      const rect = modal.getBoundingClientRect();
-      const inDialog =
-        rect.top <= e.clientY && e.clientY <= rect.bottom &&
-        rect.left <= e.clientX && e.clientX <= rect.right;
-      if (!inDialog) modal.close();
+    document.getElementById('createPostModal').addEventListener('click', (e) => {
+        if (e.target === document.getElementById('createPostModal')) {
+            closeCreatePostModal();
+        }
+    });
+
+    document.getElementById('registerModal').addEventListener('click', (e) => {
+        if (e.target === document.getElementById('registerModal')) {
+            closeRegisterModal();
+        }
+    });
+
+    document.getElementById('loginModal').addEventListener('click', (e) => {
+        if (e.target === document.getElementById('loginModal')) {
+            closeLoginModal();
+        }
     });
 </script>
 </body>
