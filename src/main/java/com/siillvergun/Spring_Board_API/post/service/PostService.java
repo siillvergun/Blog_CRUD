@@ -59,24 +59,6 @@ public class PostService {
                 .toList();
     }
 
-    // 제목으로 조회
-    public List<PostResponseDto> getPostByTitle(String title) {
-        List<Post> postsByTitle = postRepository.findByTitleContaining(title);
-
-        return postsByTitle.stream()
-                .map(PostResponseDto::from)
-                .toList();
-    }
-
-    // 내용으로 조회
-    public List<PostResponseDto> getPostByContent(String keyword) {
-        List<Post> postsByContent = postRepository.findByContentContaining(keyword);
-
-        return postsByContent.stream()
-                .map(PostResponseDto::from)
-                .toList();
-    }
-
     // postRepository.findById()은 반환값이 Optional, 또한 내부 로직에서는 DTO보다 Entity를 직접 다루는게 좋음
     // Post를 반환값으로 가지는 메서드를 정의
     public Post findByPostId(Long postId) {
@@ -102,7 +84,6 @@ public class PostService {
         post.updateContent(updateDto.getContent());
         return PostResponseDto.from(post);
     }
-
 
     /// delete
     @Transactional
