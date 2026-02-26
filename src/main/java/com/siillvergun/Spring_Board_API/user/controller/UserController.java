@@ -5,6 +5,7 @@ import com.siillvergun.Spring_Board_API.user.dto.UserPasswordUpdateRequestDto;
 import com.siillvergun.Spring_Board_API.user.dto.UserProfileUpdateRequestDto;
 import com.siillvergun.Spring_Board_API.user.dto.UserResponseDto;
 import com.siillvergun.Spring_Board_API.user.service.UserService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -43,7 +44,7 @@ public class UserController {
     // @RequestBody: JSON 문자열을 자바 객체로 변환해주는 역할, 포스트맨에서 JSON 형식으로 보낸 문자열 데이터를 자바 객체로 변환
     // 내부적으로 Jackson이라는 라이브러리가 가동되어, JSON의 키(email)와 User 클래스의 필드(email)를 매칭
     @PostMapping("/join")
-    public ResponseEntity<UserResponseDto> joinUser(@RequestBody UserJoinRequestDto JoinRequest) {
+    public ResponseEntity<UserResponseDto> joinUser(@Valid @RequestBody UserJoinRequestDto JoinRequest) {
         UserResponseDto response = userService.join(JoinRequest);
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
@@ -63,7 +64,7 @@ public class UserController {
     @PatchMapping("/password/{userId}")
     public ResponseEntity<Void> updatePassword(
             @PathVariable Long userId,
-            @RequestBody UserPasswordUpdateRequestDto updateRequest) {
+            @Valid @RequestBody UserPasswordUpdateRequestDto updateRequest) {
         userService.updatePassword(userId, updateRequest);
         return ResponseEntity.noContent().build();
     }

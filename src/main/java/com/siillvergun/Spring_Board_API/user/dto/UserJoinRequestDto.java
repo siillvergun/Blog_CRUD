@@ -1,6 +1,8 @@
 package com.siillvergun.Spring_Board_API.user.dto;
 
 import com.siillvergun.Spring_Board_API.user.entity.User;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Pattern;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -14,6 +16,8 @@ public class UserJoinRequestDto {
     // 가입 시 필요한 딱 3가지 정보만 정의, id는 스프링에서 자동으로 생성
     private String email;
     private String nickname;
+    @NotBlank
+    @Pattern(regexp = "^(?=.*[A-Za-z])(?=.*\\d)(?=.*[@$!%*#?&])[A-Za-z\\d@$!%*#?&]{8,16}$", message = "특수문자를 포함하여 8자 이상 입력하시오")
     private String password;
 
     // DTO를 엔티티로 변환해주는 편의 메서드
