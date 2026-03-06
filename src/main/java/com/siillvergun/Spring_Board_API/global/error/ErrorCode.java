@@ -17,7 +17,8 @@ public enum ErrorCode {
     INVALID_INPUT_VALUE("4000", "입력값이 올바르지 않습니다.", HttpStatus.BAD_REQUEST),
     METHOD_NOT_ALLOWED("4050", "지원하지 않는 HTTP 메서드입니다.", HttpStatus.METHOD_NOT_ALLOWED),
     BAD_REQUEST_JSON("4001", "요청 본문(JSON) 형식이 잘못되었습니다.", HttpStatus.BAD_REQUEST),
-    INTERNAL_SERVER_ERROR("5000", "서버 내부 오류가 발생했습니다.", HttpStatus.INTERNAL_SERVER_ERROR);
+    INTERNAL_SERVER_ERROR("5000", "서버 내부 오류가 발생했습니다.", HttpStatus.INTERNAL_SERVER_ERROR),
+    NO_LONGIN_REQUEST("401", "인증되지 않은 요청입니다", HttpStatus.UNAUTHORIZED);
 
     private final String code;
     private final String message;
