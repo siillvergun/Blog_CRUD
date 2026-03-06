@@ -15,12 +15,6 @@ public interface PostRepository extends JpaRepository<Post, Long> {
     @EntityGraph(attributePaths = {"author"})
     List<Post> findByAuthorUserId(Long userId);
 
-    // 제목으로 검색
-    List<Post> findByTitleContaining(String title);
-
-    // 내용으로 검색
-    List<Post> findByContentContaining(String keyword);
-
     // fetch join - N+1문제 방지
     @Query("select p from Post p join fetch p.author")
     List<Post> findAllWithAuthor();
