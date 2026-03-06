@@ -1,9 +1,6 @@
 package com.siillvergun.Spring_Board_API.user.controller;
 
-import com.siillvergun.Spring_Board_API.user.dto.UserJoinRequestDto;
-import com.siillvergun.Spring_Board_API.user.dto.UserPasswordUpdateRequestDto;
-import com.siillvergun.Spring_Board_API.user.dto.UserProfileUpdateRequestDto;
-import com.siillvergun.Spring_Board_API.user.dto.UserResponseDto;
+import com.siillvergun.Spring_Board_API.user.dto.*;
 import com.siillvergun.Spring_Board_API.user.service.UserService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -75,5 +72,15 @@ public class UserController {
     public ResponseEntity<Void> deleteUser(@PathVariable Long userId) {
         userService.deleteUser(userId);
         return ResponseEntity.noContent().build();
+    }
+
+    /// 로그인
+    @PostMapping("/login")
+    public ResponseEntity<String> login(@RequestBody LoginRequestDto loginRequestDto) {
+        // 서비스에게 로그인을 시키고, 성공하면 발급된 토큰을 받아옵니다.
+        String token = userService.loginWithJwt(loginRequestDto);
+
+        // 발급된 토큰을 클라이언트에게 짠! 하고 돌려줍니다.
+        return ResponseEntity.ok(token);
     }
 }
