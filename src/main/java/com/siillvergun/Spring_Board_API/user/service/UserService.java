@@ -2,10 +2,8 @@ package com.siillvergun.Spring_Board_API.user.service;
 
 import com.siillvergun.Spring_Board_API.global.error.CustomException;
 import com.siillvergun.Spring_Board_API.global.error.ErrorCode;
-import com.siillvergun.Spring_Board_API.user.dto.UserJoinRequestDto;
-import com.siillvergun.Spring_Board_API.user.dto.UserPasswordUpdateRequestDto;
-import com.siillvergun.Spring_Board_API.user.dto.UserProfileUpdateRequestDto;
-import com.siillvergun.Spring_Board_API.user.dto.UserResponseDto;
+import com.siillvergun.Spring_Board_API.global.jwt.JwtUtil;
+import com.siillvergun.Spring_Board_API.user.dto.*;
 import com.siillvergun.Spring_Board_API.user.entity.User;
 import com.siillvergun.Spring_Board_API.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -24,6 +22,7 @@ import java.util.List;
 public class UserService {
     private final UserRepository userRepository;
     private final BCryptPasswordEncoder passwordEncoder;
+    private final JwtUtil jwtUtil;
 
     // Create(Request DTO)
     @Transactional
@@ -34,6 +33,16 @@ public class UserService {
         // 매개변수로 받은 DTO에서 암호화된 패스워드를 만들고 다시 엔티티로 변환할때 평문 비밀번호가 아닌 암호화된 패스워드를 넘겨줌
         User user = joinRequest.toEntity(encodedPassword);
         return UserResponseDto.from(userRepository.save(user)); // 이제 포스트맨 응답에 비밀번호가 사라짐
+    }
+
+    public String loginWithJwt(LoginRequestDto loginRequestDto) {
+        User user = userRepository.findByEmail(loginRequestDto.getEmail())
+                .orElseThrow(() -> new IllegalArgumentException("가입되지 않은 이메일입니다."));
+
+        if (!passwordEncoder.matches(loginRequestDto.getPassword(), user.getPassword())) {
+            throw new IllegalArgumentException("비밀번호가 잘못되었습니다.");
+        }
+        return jwtUtil.generateToken(user.getEmail());
     }
 
     // Read(조회)
