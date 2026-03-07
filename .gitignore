@@ -35,3 +35,14 @@ out/
 
 ### VS Code ###
 .vscode/
+
+# macOS
+.DS_Store
+
+# env files
+.env
+.env.*
+
+# local config
+src/main/resources/application-local.yml
+src/main/resources/application-secret.yml
