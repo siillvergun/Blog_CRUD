@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 @RestControllerAdvice // "이 서버의 모든 컨트롤러에서 발생하는 에러는 이 클래스가 관리
 @Slf4j
+/// 이 클래스에서 잡는 모든 에러는 애플리케이션/서비스 에러임
 public class GlobalExceptionHandler {
 
     /// 커스텀 에러

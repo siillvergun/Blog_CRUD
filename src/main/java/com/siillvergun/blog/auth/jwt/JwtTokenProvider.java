@@ -47,16 +47,22 @@ public class JwtTokenProvider {
     }
 
 
-    public Long validateTokenAndgetUserId(String token) {
+    public Long parseToken(String token) {
         // jwt문자열인 token을 해석해서 spring security가 다루기 쉬운 jwt객체로 바꿔줌
         // 문자열 안에 들어있던 JWT 정보를 파싱해서 객체로 복원하는 작업
-        Jwt jwt = jwtDecoder.decode(token);
-        // 문자열로 저장된 userId를 다시 Long형으로 복원
-        return Long.valueOf(jwt.getSubject());
+        try {
+            Jwt jwt = jwtDecoder.decode(token);
+            // 문자열로 저장된 userId를 다시 Long형으로 복원
+            return Long.valueOf(jwt.getSubject());
+        } catch (JwtException e) {
+            throw new IllegalArgumentException("유효하지 않은 JWT 토큰입니다");
+        } catch (NumberFormatException e) {
+            throw new NumberFormatException("JWT subject 형식이 올바르지 않습니다.");
+        }
     }
 
     // 토큰을 파싱해서 Bearer를 확인하는 메서드
-    public String parseToken(String authHeader) {
+    public String BearerParse(String authHeader) {
         if (authHeader == null || authHeader.isBlank()) {
             return null;
         }
@@ -65,4 +71,6 @@ public class JwtTokenProvider {
         }
         return authHeader.substring(7);
     }
+
+    
 }
