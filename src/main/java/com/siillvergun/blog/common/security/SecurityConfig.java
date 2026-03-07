@@ -34,10 +34,8 @@ public class SecurityConfig {
                 session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
 
         http.authorizeHttpRequests(auth -> auth
-                // 회원가입, 로그인 API는 토큰 없이도 접근 가능하게 허락! (h2-console도 허락)
-                .requestMatchers("/users/join", "/users/login", "/h2-console/**").permitAll()
-                // 그 외의 모든 요청(게시글 작성, 수정, 삭제 등)은 무조건 인증(토큰)을 요구함!
-                .anyRequest().authenticated()
+                // 일단 모든 api요청 인증없이 가능하게
+                .anyRequest().permitAll()
         );
 
         return http.build();
