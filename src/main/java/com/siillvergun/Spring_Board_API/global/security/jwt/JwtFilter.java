@@ -1,4 +1,4 @@
-package com.siillvergun.Spring_Board_API.global.jwt;
+package com.siillvergun.Spring_Board_API.global.security.jwt;
 
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;

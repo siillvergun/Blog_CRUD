@@ -1,4 +1,4 @@
-package com.siillvergun.Spring_Board_API.global.jwt;
+package com.siillvergun.Spring_Board_API.global.security.jwt;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
@@ -10,7 +10,7 @@ import org.springframework.stereotype.Component;
 import java.security.Key;
 import java.util.Date;
 
-@Component // 스프링아, 이 조폐공사(객체)를 네가 관리해 줘! (@Bean과 비슷한 역할)
+@Component // @Bean과 비슷한 역할
 public class JwtUtil {
 
     private final Key key;
@@ -23,7 +23,6 @@ public class JwtUtil {
         this.expiration = expiration; // 마찬가지로 application.properties에 정의해둔 유효기간을 가져옴
     }
 
-    // 1️⃣ 토큰(여권) 발급기
     // 유저가 로그인을 성공하면 이 메서드를 불러서 토큰을 만들어 줍니다.
     public String generateToken(String email) {
         Date now = new Date();
@@ -31,14 +30,13 @@ public class JwtUtil {
 
         return Jwts.builder()
                 .setSubject(email) // 토큰 주인의 이름표 (여기서는 유저의 이메일)
-                .setIssuedAt(now) // 여권 발급 시간
-                .setExpiration(expiryDate) // 여권 만료 시간
-                .signWith(key, SignatureAlgorithm.HS256) // 우리 서버의 비밀키로 위조 방지 도장 쾅!
+                .setIssuedAt(now) // 발급 시간
+                .setExpiration(expiryDate) // 만료 시간
+                .signWith(key, SignatureAlgorithm.HS256) // 우리 서버의 비밀키로 위조 방지
                 .compact(); // JWT라는 긴 문자열로 압축!
     }
 
-    // 2️⃣ 토큰에서 정보(이메일) 꺼내기
-    // 나중에 유저가 토큰을 들고 오면, "너 누구야?" 하고 이메일을 확인하는 용도입니다.
+    //
     public String getEmailFromToken(String token) {
         Claims claims = Jwts.parserBuilder()
                 .setSigningKey(key) // 반드시 발급할 때 썼던 비밀키를 넣어야만 열립니다. 해커는 못 엽니다!

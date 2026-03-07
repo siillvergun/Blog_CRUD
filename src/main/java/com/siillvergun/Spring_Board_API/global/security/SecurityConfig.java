@@ -1,7 +1,6 @@
-package com.siillvergun.Spring_Board_API.user.service;
+package com.siillvergun.Spring_Board_API.global.security;
 
-import com.siillvergun.Spring_Board_API.global.jwt.CustomAuthenticationEntryPoint;
-import com.siillvergun.Spring_Board_API.global.jwt.JwtFilter;
+import com.siillvergun.Spring_Board_API.global.security.jwt.JwtFilter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -34,7 +33,7 @@ public class SecurityConfig {
                 // 아래 한 줄을 추가하여 H2 콘솔의 프레임 구조를 허용합니다.
                 .headers(headers -> headers.frameOptions(frame -> frame.sameOrigin()));
 
-        // Jwt는 서버리스 상태에서 동작
+        // Jwt는 stateless 상태
         http.sessionManagement(session ->
                 session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
 

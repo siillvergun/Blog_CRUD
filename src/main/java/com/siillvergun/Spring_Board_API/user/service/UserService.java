@@ -2,7 +2,7 @@ package com.siillvergun.Spring_Board_API.user.service;
 
 import com.siillvergun.Spring_Board_API.global.error.CustomException;
 import com.siillvergun.Spring_Board_API.global.error.ErrorCode;
-import com.siillvergun.Spring_Board_API.global.jwt.JwtUtil;
+import com.siillvergun.Spring_Board_API.global.security.jwt.JwtUtil;
 import com.siillvergun.Spring_Board_API.user.dto.*;
 import com.siillvergun.Spring_Board_API.user.entity.User;
 import com.siillvergun.Spring_Board_API.user.repository.UserRepository;
@@ -24,7 +24,7 @@ public class UserService {
     private final BCryptPasswordEncoder passwordEncoder;
     private final JwtUtil jwtUtil;
 
-    // Create(Request DTO)
+    /// Create(Request DTO)
     @Transactional
     public UserResponseDto join(UserJoinRequestDto joinRequest) {
         // 평문 비밀번호 암호화
@@ -35,17 +35,7 @@ public class UserService {
         return UserResponseDto.from(userRepository.save(user)); // 이제 포스트맨 응답에 비밀번호가 사라짐
     }
 
-    public String loginWithJwt(LoginRequestDto loginRequestDto) {
-        User user = userRepository.findByEmail(loginRequestDto.getEmail())
-                .orElseThrow(() -> new IllegalArgumentException("가입되지 않은 이메일입니다."));
-
-        if (!passwordEncoder.matches(loginRequestDto.getPassword(), user.getPassword())) {
-            throw new IllegalArgumentException("비밀번호가 잘못되었습니다.");
-        }
-        return jwtUtil.generateToken(user.getEmail());
-    }
-
-    // Read(조회)
+    /// Read(조회)
     // 전체 조회
     public List<UserResponseDto> getAllUsers() {
         List<User> users = userRepository.findAll();
@@ -70,7 +60,8 @@ public class UserService {
                 .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
     }
 
-    // Update(갱신, DTO)
+    /// Update(갱신, DTO)
+    // 프로필 업데이트
     @Transactional // 값 변경을 감지하는 어노테이션
     public UserResponseDto updateProfile(Long id, UserProfileUpdateRequestDto updateRequest) {
         // 1. DB에서 기존 유저를 조회
@@ -86,6 +77,7 @@ public class UserService {
         return UserResponseDto.from(user);
     }
 
+    // 패스워드 업데이트
     @Transactional
     public void updatePassword(Long id, UserPasswordUpdateRequestDto updateRequest) {
         User user = findUserById(id);
@@ -102,7 +94,7 @@ public class UserService {
         log.info("비밀번호 변경 완료 - 사용자 ID: {}", id);
     }
 
-    // Delete(삭제)
+    /// Delete(삭제)
     @Transactional
     public void deleteUser(Long id) {
         User user = findUserById(id);
@@ -110,5 +102,16 @@ public class UserService {
         // 2. 삭제 실행
         log.warn("사용자 삭제 실행 - ID: {}", id);
         userRepository.delete(user);
+    }
+
+    // jwt토큰 발급
+    public String issueToken(LoginRequestDto loginRequestDto) {
+        User user = userRepository.findByEmail(loginRequestDto.getEmail())
+                .orElseThrow(() -> new IllegalArgumentException("가입되지 않은 이메일입니다."));
+
+        if (!passwordEncoder.matches(loginRequestDto.getPassword(), user.getPassword())) {
+            throw new IllegalArgumentException("비밀번호가 잘못되었습니다.");
+        }
+        return jwtUtil.generateToken(user.getEmail());
     }
 }

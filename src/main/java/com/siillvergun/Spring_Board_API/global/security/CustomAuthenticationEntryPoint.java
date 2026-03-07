@@ -1,4 +1,4 @@
-package com.siillvergun.Spring_Board_API.global.jwt;
+package com.siillvergun.Spring_Board_API.global.security;
 
 import com.siillvergun.Spring_Board_API.global.error.ErrorCode;
 import jakarta.servlet.ServletException;
