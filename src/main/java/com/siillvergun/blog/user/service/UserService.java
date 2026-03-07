@@ -1,5 +1,6 @@
 package com.siillvergun.blog.user.service;
 
+import com.siillvergun.blog.auth.jwt.JwtTokenProvider;
 import com.siillvergun.blog.common.error.CustomException;
 import com.siillvergun.blog.common.error.ErrorCode;
 import com.siillvergun.blog.user.dto.*;
@@ -21,6 +22,7 @@ import java.util.List;
 public class UserService {
     private final UserRepository userRepository;
     private final BCryptPasswordEncoder passwordEncoder;
+    private final JwtTokenProvider jwtTokenProvider;
 
     /// Create(Request DTO)
     @Transactional
@@ -116,7 +118,8 @@ public class UserService {
             throw new IllegalArgumentException("비밀번호가 일치하지 않습니다.");
         }
 
-        String accessToken = "임시토큰";
+
+        String accessToken = jwtTokenProvider.createAccessToken(user.getUserId(), user.getEmail());
         return new LoginResponseDto(accessToken);
     }
 }
