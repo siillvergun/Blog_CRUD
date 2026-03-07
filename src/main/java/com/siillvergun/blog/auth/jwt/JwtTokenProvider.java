@@ -2,10 +2,7 @@ package com.siillvergun.blog.auth.jwt;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.oauth2.jose.jws.MacAlgorithm;
-import org.springframework.security.oauth2.jwt.JwsHeader;
-import org.springframework.security.oauth2.jwt.JwtClaimsSet;
-import org.springframework.security.oauth2.jwt.JwtEncoder;
-import org.springframework.security.oauth2.jwt.JwtEncoderParameters;
+import org.springframework.security.oauth2.jwt.*;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
@@ -13,6 +10,7 @@ import java.time.Instant;
 @Service
 public class JwtTokenProvider {
     private final JwtEncoder jwtEncoder;
+    private final JwtDecoder jwtDecoder;
     private final long expiration;
 
     // @RequiredArgsConstructor을 쓰면 expiration이 설정값이 아니라 스프링이 bean을 주입해야하는지에 대한 문제가 생김
@@ -20,9 +18,11 @@ public class JwtTokenProvider {
     // 즉 @Value의 의미는 bean을 찾지말고 프로퍼티에서 꺼내 쓰라는 의미
     public JwtTokenProvider(
             JwtEncoder jwtEncoder,
+            JwtDecoder jwtDecoder,
             @Value("${jwt.expiration}") long expiration
     ) {
         this.jwtEncoder = jwtEncoder;
+        this.jwtDecoder = jwtDecoder;
         this.expiration = expiration;
     }
 
@@ -32,6 +32,7 @@ public class JwtTokenProvider {
 
         // 토큰 안에 들어가는 내용(payload)
         JwtClaimsSet jwtClaimsSet = JwtClaimsSet.builder()
+                // String.valueOf메서드를 통해서 Long타입을 String타입으로 저장
                 .subject(String.valueOf(userId)) // 토큰의 발급자
                 .issuedAt(now) // 생성 시간
                 .expiresAt(now.plusMillis(expiration)) // 만료 시간
@@ -46,15 +47,22 @@ public class JwtTokenProvider {
     }
 
 
-//    public boolean validateToken(String token) {
-//
-//    }
-//
-//    public Long getUserId(String token) {
-//
-//    }
-//
-//    public String getEmail(String token) {
-//
-//    }
+    public Long validateTokenAndgetUserId(String token) {
+        // jwt문자열인 token을 해석해서 spring security가 다루기 쉬운 jwt객체로 바꿔줌
+        // 문자열 안에 들어있던 JWT 정보를 파싱해서 객체로 복원하는 작업
+        Jwt jwt = jwtDecoder.decode(token);
+        // 문자열로 저장된 userId를 다시 Long형으로 복원
+        return Long.valueOf(jwt.getSubject());
+    }
+
+    // 토큰을 파싱해서 Bearer를 확인하는 메서드
+    public String parseToken(String authHeader) {
+        if (authHeader == null || authHeader.isBlank()) {
+            return null;
+        }
+        if (!authHeader.startsWith("Bearer ")) {
+            return null;
+        }
+        return authHeader.substring(7);
+    }
 }
