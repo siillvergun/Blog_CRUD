@@ -1,9 +1,11 @@
 package com.siillvergun.blog.user.service;
 
-import com.siillvergun.blog.auth.jwt.JwtUtil;
 import com.siillvergun.blog.common.error.CustomException;
 import com.siillvergun.blog.common.error.ErrorCode;
-import com.siillvergun.blog.user.dto.*;
+import com.siillvergun.blog.user.dto.UserJoinRequestDto;
+import com.siillvergun.blog.user.dto.UserPasswordUpdateRequestDto;
+import com.siillvergun.blog.user.dto.UserProfileUpdateRequestDto;
+import com.siillvergun.blog.user.dto.UserResponseDto;
 import com.siillvergun.blog.user.entity.User;
 import com.siillvergun.blog.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -22,7 +24,6 @@ import java.util.List;
 public class UserService {
     private final UserRepository userRepository;
     private final BCryptPasswordEncoder passwordEncoder;
-    private final JwtUtil jwtUtil;
 
     /// Create(Request DTO)
     @Transactional
@@ -102,16 +103,5 @@ public class UserService {
         // 2. 삭제 실행
         log.warn("사용자 삭제 실행 - ID: {}", id);
         userRepository.delete(user);
-    }
-
-    // jwt토큰 발급
-    public String issueToken(LoginRequestDto loginRequestDto) {
-        User user = userRepository.findByEmail(loginRequestDto.getEmail())
-                .orElseThrow(() -> new IllegalArgumentException("가입되지 않은 이메일입니다."));
-
-        if (!passwordEncoder.matches(loginRequestDto.getPassword(), user.getPassword())) {
-            throw new IllegalArgumentException("비밀번호가 잘못되었습니다.");
-        }
-        return jwtUtil.generateToken(user.getEmail());
     }
 }

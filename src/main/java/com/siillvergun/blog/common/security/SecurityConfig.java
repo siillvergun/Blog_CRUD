@@ -1,6 +1,5 @@
 package com.siillvergun.blog.common.security;
 
-import com.siillvergun.blog.auth.jwt.JwtFilter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -9,7 +8,6 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 // SecurityConfig에서 선언한 BCryptPasswordEncoder는 외부 라이브러리에 있는 클래스. 따라서 내 클래스로 가져와 객체로 만들어둠.
 // 이때, 외부 라이브러리에 대한 어노테이션을 직접 붙이지 못하니까, @Bean을 통해 이 메서드가 실행돼서 나오는 이 객체를 스프링이 관리하게 만든다.
@@ -18,8 +16,6 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @EnableWebSecurity // 이제부터 스프링 시큐리티의 웹 보안 기능을 활성화하는 스위치
 @RequiredArgsConstructor
 public class SecurityConfig {
-    private final JwtFilter jwtFilter;
-    private final CustomAuthenticationEntryPoint customAuthenticationEntryPoint;
 
     @Bean // 외부에서 가져온 객체를 스프링이 관리하게 시키는 어노테이션
     public BCryptPasswordEncoder passwordEncoder() {
@@ -39,19 +35,10 @@ public class SecurityConfig {
 
         http.authorizeHttpRequests(auth -> auth
                 // 회원가입, 로그인 API는 토큰 없이도 접근 가능하게 허락! (h2-console도 허락)
-                .requestMatchers("/login", "/h2-console/**").permitAll()
+                .requestMatchers("/users/join", "/users/login", "/h2-console/**").permitAll()
                 // 그 외의 모든 요청(게시글 작성, 수정, 삭제 등)은 무조건 인증(토큰)을 요구함!
                 .anyRequest().authenticated()
         );
-
-        http.exceptionHandling(exception -> exception
-                .authenticationEntryPoint(customAuthenticationEntryPoint)
-        );
-
-        // 4. ⭐️ 입국 심사대(JwtFilter) 설치 위치 지정
-        // 원래 스프링이 기본으로 쓰는 '아이디/비밀번호 검사기'가 작동하기 [전에],
-        // 우리가 만든 'JwtFilter'를 먼저 거치게끔 새치기를 시켜줍니다.
-        http.addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
     }
