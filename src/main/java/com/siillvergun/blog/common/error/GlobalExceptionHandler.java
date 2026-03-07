@@ -57,6 +57,7 @@ public class GlobalExceptionHandler {
     }
 
     /// 미처 잡지 못한 에러들
+    // 전부 서버 에러로 처리
     @ExceptionHandler(Exception.class) // Exception의 최상위 클래스
     public ResponseEntity<ErrorResponseDto> handleAllException(Exception e) {
         // 500 에러는 서버 문제이므로, 개발자가 원인을 파악할 수 있도록 전체 에러 로그(e)를 남깁니다.
