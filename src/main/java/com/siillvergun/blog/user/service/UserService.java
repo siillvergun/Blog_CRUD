@@ -1,6 +1,5 @@
 package com.siillvergun.blog.user.service;
 
-import com.siillvergun.blog.auth.jwt.JwtTokenProvider;
 import com.siillvergun.blog.common.error.CustomException;
 import com.siillvergun.blog.common.error.ErrorCode;
 import com.siillvergun.blog.user.dto.UserJoinRequestDto;
@@ -25,7 +24,6 @@ import java.util.List;
 public class UserService {
     private final UserRepository userRepository;
     private final BCryptPasswordEncoder passwordEncoder;
-    private final JwtTokenProvider jwtTokenProvider;
 
     /// Create(Request DTO)
     @Transactional
@@ -50,10 +48,17 @@ public class UserService {
 
     // 단건 조회
     // DTO는 외부와 데이터를 주고 받을 때에만 사용
-    public UserResponseDto getUserResponse(Long id) {
-        return userRepository.findById(id).map(UserResponseDto::from)
-                .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
+    public UserResponseDto getUserInfo(Long userId) {
+        User user = findUserById(userId);
+        return UserResponseDto.from(user);
     }
+
+// 검색은 나중에 알고리즘 붙이기, 지금 구현 X
+//    public PublicUserResponseDto getAnotherUserInfo(Long userId) {
+//        User AnotherUser = findUserById(userId);
+//        return PublicUserResponseDto.from(AnotherUser);
+//    }
+
 
     // 백엔드 내부에서는 엔티티를 가지고 데이터를 관리하는게 좋기 때문에 메서드 분리
     // JPA는 Entity를 관리하기 때문에 이 객체의 값이 바뀔 때 트랜젝션이 끝날 때 JPA가 자동으로 DB에 반영해줌(JPA는 DTO를 신경쓰지 않음)
