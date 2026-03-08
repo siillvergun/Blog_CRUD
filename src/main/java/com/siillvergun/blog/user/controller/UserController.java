@@ -1,6 +1,9 @@
 package com.siillvergun.blog.user.controller;
 
-import com.siillvergun.blog.user.dto.*;
+import com.siillvergun.blog.user.dto.UserJoinRequestDto;
+import com.siillvergun.blog.user.dto.UserPasswordUpdateRequestDto;
+import com.siillvergun.blog.user.dto.UserProfileUpdateRequestDto;
+import com.siillvergun.blog.user.dto.UserResponseDto;
 import com.siillvergun.blog.user.service.UserService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -72,13 +75,5 @@ public class UserController {
     public ResponseEntity<Void> deleteUser(@PathVariable Long userId) {
         userService.deleteUser(userId);
         return ResponseEntity.noContent().build();
-    }
-
-
-    /// 로그인
-    @PostMapping("/login")
-    public ResponseEntity<LoginResponseDto> login(@RequestBody LoginRequestDto loginRequestDto) {
-        LoginResponseDto loginResponseDto = userService.login(loginRequestDto);
-        return ResponseEntity.ok(loginResponseDto);
     }
 }
