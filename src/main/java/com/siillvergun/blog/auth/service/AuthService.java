@@ -1,8 +1,8 @@
 package com.siillvergun.blog.auth.service;
 
+import com.siillvergun.blog.auth.dto.LoginRequestDto;
+import com.siillvergun.blog.auth.dto.LoginResponseDto;
 import com.siillvergun.blog.auth.jwt.JwtTokenProvider;
-import com.siillvergun.blog.user.dto.LoginRequestDto;
-import com.siillvergun.blog.user.dto.LoginResponseDto;
 import com.siillvergun.blog.user.entity.User;
 import com.siillvergun.blog.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;

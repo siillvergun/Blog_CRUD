@@ -1,4 +1,4 @@
-package com.siillvergun.blog.user.dto;
+package com.siillvergun.blog.auth.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

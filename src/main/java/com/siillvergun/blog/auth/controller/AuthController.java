@@ -1,8 +1,8 @@
 package com.siillvergun.blog.auth.controller;
 
+import com.siillvergun.blog.auth.dto.LoginRequestDto;
+import com.siillvergun.blog.auth.dto.LoginResponseDto;
 import com.siillvergun.blog.auth.service.AuthService;
-import com.siillvergun.blog.user.dto.LoginRequestDto;
-import com.siillvergun.blog.user.dto.LoginResponseDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
