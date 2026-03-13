@@ -1,4 +1,4 @@
-package com.siillvergun.blog.common.security;
+package com.siillvergun.blog.auth.config;
 
 import com.siillvergun.blog.auth.jwt.JwtFilter;
 import lombok.RequiredArgsConstructor;
@@ -42,7 +42,7 @@ public class SecurityConfig {
         // 회원가입, 로그인, H2 콘솔은 인증 없이 허용
         // 나머지 요청은 인증 필요
         http.authorizeHttpRequests(auth -> auth
-                .requestMatchers("/users/join", "/auth/login", "/h2-console/**", "/users/{userId}").permitAll()
+                .requestMatchers("/users/join", "/auth/login", "/h2-console/**", "/users").permitAll()
                 .anyRequest().authenticated()
         );
 

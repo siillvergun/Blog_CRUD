@@ -31,12 +31,12 @@ public class JwtFilter extends OncePerRequestFilter {
         // 요청 헤더에서 Authorization 값을 꺼냄(Bearer + JWT문자열)
         String authHeader = httpServletRequest.getHeader("Authorization");
         // Bearer를 땐 순수 JWT 문자열
-        String token = jwtTokenProvider.BearerParse(authHeader);
+        String token = jwtTokenProvider.bearerParse(authHeader);
 
         if (token != null) {
             try {
                 // userId를 JWT문자열에서 파싱
-                Long userId = jwtTokenProvider.parseToken(token);
+                Long userId = jwtTokenProvider.parseBearerToken(token);
                 // 스프링 시큐리티용 인증 객체 생성
                 UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(
                         userId, // principal: “현재 로그인 사용자가 누구냐”를 나타내는 핵심값"

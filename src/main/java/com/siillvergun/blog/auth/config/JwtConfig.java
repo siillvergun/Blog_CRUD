@@ -1,4 +1,4 @@
-package com.siillvergun.blog.auth.jwt;
+package com.siillvergun.blog.auth.config;
 
 import com.nimbusds.jose.jwk.source.ImmutableSecret;
 import org.springframework.beans.factory.annotation.Value;

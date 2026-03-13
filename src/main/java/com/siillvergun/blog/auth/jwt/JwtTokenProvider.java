@@ -47,7 +47,7 @@ public class JwtTokenProvider {
     }
 
 
-    public Long parseToken(String token) {
+    public Long parseBearerToken(String token) {
         // jwt문자열인 token을 해석해서 spring security가 다루기 쉬운 jwt객체로 바꿔줌
         // 문자열 안에 들어있던 JWT 정보를 파싱해서 객체로 복원하는 작업
         try {
@@ -62,7 +62,7 @@ public class JwtTokenProvider {
     }
 
     // 토큰을 파싱해서 Bearer를 확인하는 메서드
-    public String BearerParse(String authHeader) {
+    public String bearerParse(String authHeader) {
         if (authHeader == null || authHeader.isBlank()) {
             return null;
         }
@@ -71,6 +71,4 @@ public class JwtTokenProvider {
         }
         return authHeader.substring(7);
     }
-
-    
 }

@@ -2,10 +2,7 @@ package com.siillvergun.blog.user.service;
 
 import com.siillvergun.blog.common.error.CustomException;
 import com.siillvergun.blog.common.error.ErrorCode;
-import com.siillvergun.blog.user.dto.UserJoinRequestDto;
-import com.siillvergun.blog.user.dto.UserPasswordUpdateRequestDto;
-import com.siillvergun.blog.user.dto.UserProfileUpdateRequestDto;
-import com.siillvergun.blog.user.dto.UserResponseDto;
+import com.siillvergun.blog.user.dto.*;
 import com.siillvergun.blog.user.entity.User;
 import com.siillvergun.blog.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -38,11 +35,11 @@ public class UserService {
 
     /// Read(조회)
     // 전체 조회
-    public List<UserResponseDto> getAllUsers() {
+    public List<PublicUserResponseDto> getAllUsers() {
         List<User> users = userRepository.findAll();
 
         return users.stream(). // 컬렉션을 스트림으로 변환 (스트림이란 데이터 소스를 추상화하여 무슨 데이터인지 상관하지않고 같은 방법으로 처리가능 )
-                map(UserResponseDto::from). // 각 User 객체를 UserResponse로 변환, [ stream().map(클래스명::메서드명) ]
+                map(PublicUserResponseDto::from). // 각 User 객체를 UserResponse로 변환, [ stream().map(클래스명::메서드명) ]
                 toList(); // 그 결과를 리스트로 모음
     }
 
