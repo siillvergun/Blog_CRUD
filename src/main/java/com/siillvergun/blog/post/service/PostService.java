@@ -104,6 +104,8 @@ public class PostService {
         Post post = findByPostId(postId);
         User user = userService.findUserById(userId);
 
+        authAccess(post, userId);
+
         // 2. 이미 좋아요를 눌렀는지 확인
         Optional<PostLike> optionalLike = postLikeRepository.findByUserAndPost(user, post);
 

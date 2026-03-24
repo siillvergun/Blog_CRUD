@@ -7,6 +7,7 @@ import com.siillvergun.blog.comment.entity.CommentLike;
 import com.siillvergun.blog.comment.repository.CommentLikeRepository;
 import com.siillvergun.blog.comment.repository.CommentRepository;
 import com.siillvergun.blog.common.error.CustomException;
+import com.siillvergun.blog.common.error.ErrorCode;
 import com.siillvergun.blog.post.entity.Post;
 import com.siillvergun.blog.post.service.PostService;
 import com.siillvergun.blog.user.entity.User;
@@ -63,8 +64,10 @@ public class CommentService {
 
     // Update
     @Transactional
-    public CommentResponseDto updateComment(Long commentId, String changedString) {
+    public CommentResponseDto updateComment(Long commentId, String changedString, Long userId) {
         Comment comment = findByCommentId(commentId);
+
+        authAccess(userId, comment);
 
         comment.changeComment(changedString);
         return CommentResponseDto.from(comment);
@@ -73,11 +76,12 @@ public class CommentService {
 
     // Delete
     @Transactional
-    public void deleteComment(Long commentId) {
+    public void deleteComment(Long commentId, Long userId) {
         Comment comment = findByCommentId(commentId);
 
-        commentLikeRepository.deleteByComment(comment);
+        authAccess(userId, comment);
 
+        commentLikeRepository.deleteByComment(comment);
         commentRepository.delete(comment);
         log.warn("댓글 삭제 실행 - ID: {}", commentId);
     }
@@ -87,6 +91,8 @@ public class CommentService {
         // 1. 게시글과 유저 존재 확인
         User user = userService.findUserById(userId);
         Comment comment = findByCommentId(commentId);
+
+        authAccess(userId, comment);
 
         // 2. 이미 좋아요를 눌렀는지 확인
         Optional<CommentLike> optionalLike = commentLikeRepository.findByUserAndComment(user, comment);
@@ -101,6 +107,13 @@ public class CommentService {
             commentLikeRepository.save(new CommentLike(user, comment)); // 1. like 테이블에 저장
             comment.increaseLikeCount(); // 2. post 테이블의 카운트 +1 (Dirty Checking)
             log.info("댓글 좋아요 등록 - user: {}, comment: {}", userId, commentId);
+        }
+    }
+
+    // 작성자 검증 로직
+    private void authAccess(Long userId, Comment comment) {
+        if (!comment.getAuthor().getUserId().equals(userId)) {
+            throw new CustomException(ErrorCode.UNAUTHORIZED_ACCESS);
         }
     }
 }
