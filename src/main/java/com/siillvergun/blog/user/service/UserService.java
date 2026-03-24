@@ -7,6 +7,7 @@ import com.siillvergun.blog.user.entity.User;
 import com.siillvergun.blog.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -21,6 +22,11 @@ import java.util.List;
 public class UserService {
     private final UserRepository userRepository;
     private final BCryptPasswordEncoder passwordEncoder;
+
+    // 토큰에서 userId 가져오는 메서드
+    public Long getCurrentUserId(Authentication authentication) {
+        return (Long) authentication.getPrincipal();
+    }
 
     /// Create(Request DTO)
     @Transactional

@@ -3,9 +3,12 @@ package com.siillvergun.blog.post.controller;
 import com.siillvergun.blog.post.dto.PostRequestDto;
 import com.siillvergun.blog.post.dto.PostResponseDto;
 import com.siillvergun.blog.post.service.PostService;
+import com.siillvergun.blog.user.service.UserService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -15,15 +18,16 @@ import java.util.List;
 @RequiredArgsConstructor // final
 public class PostController {
     private final PostService postService;
+    private final UserService userService;
 
     ///  게시글 생성
-    @PostMapping("/{userId}")
+    @PostMapping("/me")
     public ResponseEntity<PostResponseDto> createPost(
-            @RequestBody PostRequestDto postRequestDto,
-            @PathVariable Long userId
+            @Valid @RequestBody PostRequestDto postRequestDto,
+            Authentication authentication
 
     ) {
-        // DTO 내부의 userId를 사용하여 생성
+        Long userId = userService.getCurrentUserId(authentication);
         PostResponseDto response = postService.createPost(postRequestDto, userId);
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
@@ -40,40 +44,42 @@ public class PostController {
 
 
     /// 유저 게시글 조회
-    @GetMapping("/user/{userId}")
-    public ResponseEntity<List<PostResponseDto>> getUserPosts(@PathVariable Long userId) {
-        // 경로 변수로 받은 userId를 서비스에 전달
+    @GetMapping("me/user")
+    public ResponseEntity<List<PostResponseDto>> getUserPosts(Authentication authentication) {
+        Long userId = userService.getCurrentUserId(authentication);
         List<PostResponseDto> userPosts = postService.getPostByAuthor(userId);
         return ResponseEntity.ok(userPosts);
     }
 
-
     /// 게시글 수정
-    @PatchMapping("/{postId}")
+    @PatchMapping("/me/{postId}")
     public ResponseEntity<PostResponseDto> updatePost(
             @PathVariable Long postId,
-            @RequestParam Long userId,
+            Authentication authentication,
             @RequestBody PostRequestDto updateDto) {
+        Long userId = userService.getCurrentUserId(authentication);
         PostResponseDto response = postService.updatePost(postId, updateDto, userId);
         return ResponseEntity.ok(response);
     }
 
 
     /// 게시글 삭제
-    @DeleteMapping("/{postId}")
+    @DeleteMapping("/me/{postId}")
     public ResponseEntity<Void> deletePost(
             @PathVariable Long postId,
-            @RequestParam Long userId
+            Authentication authentication
     ) {
+        Long userId = userService.getCurrentUserId(authentication);
         postService.deletePost(postId, userId);
         return ResponseEntity.noContent().build();
     }
 
-    @PostMapping("/{postId}/like")
+    @PostMapping("/me/{postId}/like")
     public ResponseEntity<Void> togglePostLike(
             @PathVariable Long postId,
-            @RequestParam Long userId
+            Authentication authentication
     ) {
+        Long userId = userService.getCurrentUserId(authentication);
         postService.toggleLike(userId, postId);
         return ResponseEntity.ok().build();
     }

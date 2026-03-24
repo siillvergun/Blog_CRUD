@@ -22,11 +22,6 @@ public class UserController {
     // UserService는 한 번 값을 할당 받으면 변경될 필요가 없기 때문에 final로 선언
     private final UserService userService;
 
-    // 토큰에서 userId 가져오는 메서드
-    private Long getCurrentUserId(Authentication authentication) {
-        return (Long) authentication.getPrincipal();
-    }
-
     /// 회원 가입
     // @RequestBody: JSON 문자열을 자바 객체로 변환해주는 역할, 포스트맨에서 JSON 형식으로 보낸 문자열 데이터를 자바 객체로 변환
     // 내부적으로 Jackson이라는 라이브러리가 가동되어, JSON의 키(email)와 User 클래스의 필드(email)를 매칭
@@ -47,7 +42,7 @@ public class UserController {
     // 내 정보 조회
     @GetMapping("/me")
     public ResponseEntity<UserResponseDto> getMyInfo(Authentication authentication) {
-        Long userId = getCurrentUserId(authentication);
+        Long userId = userService.getCurrentUserId(authentication);
         UserResponseDto userResponseDto = userService.getUserInfo(userId);
         return ResponseEntity.ok(userResponseDto);
     }
@@ -68,7 +63,7 @@ public class UserController {
     public ResponseEntity<UserResponseDto> updateProfile(
             Authentication authentication,
             @Valid @RequestBody UserProfileUpdateRequestDto updateRequest) {
-        Long userId = getCurrentUserId(authentication);
+        Long userId = userService.getCurrentUserId(authentication);
         UserResponseDto response = userService.updateProfile(userId, updateRequest);
         return ResponseEntity.ok(response);
     }
@@ -79,7 +74,7 @@ public class UserController {
     public ResponseEntity<Void> updatePassword(
             Authentication authentication,
             @Valid @RequestBody UserPasswordUpdateRequestDto updateRequest) {
-        Long userId = getCurrentUserId(authentication);
+        Long userId = userService.getCurrentUserId(authentication);
         userService.updatePassword(userId, updateRequest);
         return ResponseEntity.noContent().build();
     }
@@ -88,7 +83,7 @@ public class UserController {
     /// 회원 삭제
     @DeleteMapping("/me")
     public ResponseEntity<Void> deleteUser(Authentication authentication) {
-        Long userId = getCurrentUserId(authentication);
+        Long userId = userService.getCurrentUserId(authentication);
         userService.deleteUser(userId);
         return ResponseEntity.noContent().build();
     }
