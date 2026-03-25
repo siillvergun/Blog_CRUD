@@ -43,7 +43,7 @@ public class PostController {
     }
 
 
-    /// 유저 게시글 조회
+    /// 내 게시글 조회
     @GetMapping("me/user")
     public ResponseEntity<List<PostResponseDto>> getUserPosts(Authentication authentication) {
         Long userId = userService.getCurrentUserId(authentication);

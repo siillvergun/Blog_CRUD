@@ -485,12 +485,13 @@
     </div>
     <div class="modal-body">
         <div id="loginMessage"></div>
-        <p style="color: var(--muted); font-size: 14px; margin-bottom: 16px;">
-            현재 API에는 로그인 기능이 없습니다. 사용자 ID를 직접 입력하세요.
-        </p>
         <div class="form-group">
-            <label for="loginUserId">사용자 ID</label>
-            <input id="loginUserId" placeholder="사용자 ID를 입력하세요" type="number">
+            <label for="loginEmail">이메일</label>
+            <input id="loginEmail" placeholder="이메일을 입력하세요" type="email">
+        </div>
+        <div class="form-group">
+            <label for="loginPassword">비밀번호</label>
+            <input id="loginPassword" placeholder="비밀번호를 입력하세요" type="password">
         </div>
         <button class="btn primary" onclick="submitLogin()">로그인</button>
     </div>
@@ -531,10 +532,11 @@
 
     // User Management
     function loadUser() {
-        const userId = localStorage.getItem('userId');
+        const token = localStorage.getItem('accessToken');
         const userNickname = localStorage.getItem('userNickname');
-        if (userId && userNickname) {
-            currentUser = { userId: parseInt(userId), nickname: userNickname };
+        const userId = localStorage.getItem('userId');
+        if (token && userNickname && userId) {
+            currentUser = { userId: parseInt(userId), nickname: userNickname, token };
             updateUserUI();
         }
     }
@@ -543,7 +545,7 @@
         const userSection = document.getElementById('userSection');
         if (currentUser) {
             userSection.innerHTML = `
-                <span>${currentUser.nickname} (ID: ${currentUser.userId})</span>
+                <span>${currentUser.nickname}</span>
                 <button onclick="logout()">로그아웃</button>
             `;
             document.getElementById('createPostBtn').style.display = 'inline-flex';
@@ -559,6 +561,7 @@
 
     function logout() {
         currentUser = null;
+        localStorage.removeItem('accessToken');
         localStorage.removeItem('userId');
         localStorage.removeItem('userNickname');
         updateUserUI();
@@ -596,8 +599,19 @@
             });
 
             if (response.ok) {
-                const user = await response.json();
-                currentUser = { userId: user.userId, nickname: user.nickname };
+                // 회원가입 후 자동 로그인
+                const loginResponse = await fetch(`${API_BASE_URL}/auth/login`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email, password })
+                });
+                const { accessToken } = await loginResponse.json();
+                const meResponse = await fetch(`${API_BASE_URL}/users/me`, {
+                    headers: { 'Authorization': `Bearer ${accessToken}` }
+                });
+                const user = await meResponse.json();
+                currentUser = { userId: user.userId, nickname: user.nickname, token: accessToken };
+                localStorage.setItem('accessToken', accessToken);
                 localStorage.setItem('userId', user.userId);
                 localStorage.setItem('userNickname', user.nickname);
                 updateUserUI();
@@ -620,29 +634,42 @@
 
     function closeLoginModal() {
         document.getElementById('loginModal').close();
-        document.getElementById('loginUserId').value = '';
+        document.getElementById('loginEmail').value = '';
+        document.getElementById('loginPassword').value = '';
     }
 
     async function submitLogin() {
-        const userId = parseInt(document.getElementById('loginUserId').value);
+        const email = document.getElementById('loginEmail').value;
+        const password = document.getElementById('loginPassword').value;
 
-        if (!userId) {
-            showMessageInElement('loginMessage', '사용자 ID를 입력해주세요.', 'error');
+        if (!email || !password) {
+            showMessageInElement('loginMessage', '이메일과 비밀번호를 입력해주세요.', 'error');
             return;
         }
 
         try {
-            const response = await fetch(`${API_BASE_URL}/users/${userId}`);
+            const response = await fetch(`${API_BASE_URL}/auth/login`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ email, password })
+            });
+
             if (response.ok) {
-                const user = await response.json();
-                currentUser = { userId: user.userId, nickname: user.nickname };
+                const { accessToken } = await response.json();
+                // 토큰으로 내 정보 가져오기
+                const meResponse = await fetch(`${API_BASE_URL}/users/me`, {
+                    headers: { 'Authorization': `Bearer ${accessToken}` }
+                });
+                const user = await meResponse.json();
+                currentUser = { userId: user.userId, nickname: user.nickname, token: accessToken };
+                localStorage.setItem('accessToken', accessToken);
                 localStorage.setItem('userId', user.userId);
                 localStorage.setItem('userNickname', user.nickname);
                 updateUserUI();
                 closeLoginModal();
                 showMessage('로그인되었습니다!', 'success');
             } else {
-                showMessageInElement('loginMessage', '사용자를 찾을 수 없습니다.', 'error');
+                showMessageInElement('loginMessage', '이메일 또는 비밀번호가 올바르지 않습니다.', 'error');
             }
         } catch (error) {
             showMessageInElement('loginMessage', '오류: ' + error.message, 'error');
@@ -712,7 +739,9 @@
         }
         
         try {
-            const response = await fetch(`${API_BASE_URL}/posts/user/${currentUser.userId}`);
+            const response = await fetch(`${API_BASE_URL}/posts/me/user`, {
+                headers: { 'Authorization': `Bearer ${currentUser.token}` }
+            });
             if (response.ok) {
                 allPosts = await response.json();
                 renderPosts();
@@ -757,9 +786,9 @@
         }
 
         try {
-            const response = await fetch(`${API_BASE_URL}/posts/${currentUser.userId}`, {
+            const response = await fetch(`${API_BASE_URL}/posts/me`, {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
+                headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${currentUser.token}` },
                 body: JSON.stringify({ title, content })
             });
 
@@ -848,13 +877,8 @@
         // 제목으로 댓글 필터링 (정확한 일치)
         const postComments = allComments.filter(c => {
             const match = c.title && post.title && c.title.trim() === post.title.trim();
-            if (!match && c.title) {
-                console.debug('Comment title mismatch:', { commentTitle: c.title, postTitle: post.title });
-            }
             return match;
         });
-
-        console.log(`Found ${postComments.length} comments for post ${postId} (${post.title})`);
 
         if (postComments.length === 0) {
             commentsList.innerHTML = '<div class="empty">아직 댓글이 없습니다.</div>';
@@ -881,18 +905,12 @@
     }
 
     async function createComment() {
-        console.log('createComment function called');
-        console.log('Current user:', currentUser);
-        console.log('Current post ID:', currentPostId);
-        
         if (!currentUser) {
-            console.warn('User not logged in');
             showMessage('로그인이 필요합니다.', 'error');
             return;
         }
 
         if (!currentPostId) {
-            console.error('currentPostId is null');
             showMessage('게시글 정보를 찾을 수 없습니다.', 'error');
             return;
         }
@@ -903,25 +921,21 @@
             return;
         }
 
-        const url = `${API_BASE_URL}/comments/${currentUser.userId}/${currentPostId}`;
+        const url = `${API_BASE_URL}/comments/me/${currentPostId}`;
         const requestBody = { content: content.trim() };
-        
-        console.log('Creating comment:', { url, userId: currentUser.userId, postId: currentPostId, content: requestBody.content });
 
         try {
             const response = await fetch(url, {
                 method: 'POST',
-                headers: { 
-                    'Content-Type': 'application/json'
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${currentUser.token}`
                 },
                 body: JSON.stringify(requestBody)
             });
 
-            console.log('Response status:', response.status, response.statusText);
-
             if (response.ok) {
                 const commentData = await response.json();
-                console.log('Comment created:', commentData);
                 
                 document.getElementById('commentInput').value = '';
                 
@@ -937,11 +951,9 @@
                 } catch (e) {
                     errorText = `HTTP ${response.status}: ${response.statusText}`;
                 }
-                console.error('Comment creation failed:', response.status, errorText);
                 showMessage('댓글 작성 실패: ' + errorText, 'error');
             }
         } catch (error) {
-            console.error('Comment creation error:', error);
             showMessage('오류: ' + error.message, 'error');
         }
     }
@@ -954,8 +966,9 @@
         }
 
         try {
-            const response = await fetch(`${API_BASE_URL}/posts/${postId}/like?userId=${currentUser.userId}`, {
-                method: 'POST'
+            const response = await fetch(`${API_BASE_URL}/posts/me/${postId}/like`, {
+                method: 'POST',
+                headers: { 'Authorization': `Bearer ${currentUser.token}` }
             });
 
             if (response.ok) {
@@ -976,8 +989,9 @@
         }
 
         try {
-            const response = await fetch(`${API_BASE_URL}/comments/${commentId}/like?userId=${currentUser.userId}`, {
-                method: 'POST'
+            const response = await fetch(`${API_BASE_URL}/comments/me/${commentId}/like`, {
+                method: 'POST',
+                headers: { 'Authorization': `Bearer ${currentUser.token}` }
             });
 
             if (response.ok) {
@@ -1008,8 +1022,9 @@
         }
 
         try {
-            const response = await fetch(`${API_BASE_URL}/posts/${postId}?userId=${currentUser.userId}`, {
-                method: 'DELETE'
+            const response = await fetch(`${API_BASE_URL}/posts/me/${postId}`, {
+                method: 'DELETE',
+                headers: { 'Authorization': `Bearer ${currentUser.token}` }
             });
 
             if (response.ok || response.status === 204) {
@@ -1038,8 +1053,9 @@
         }
 
         try {
-            const response = await fetch(`${API_BASE_URL}/comments/${commentId}`, {
-                method: 'DELETE'
+            const response = await fetch(`${API_BASE_URL}/comments/me/${commentId}`, {
+                method: 'DELETE',
+                headers: { 'Authorization': `Bearer ${currentUser.token}` }
             });
 
             if (response.ok || response.status === 204) {

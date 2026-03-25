@@ -35,6 +35,8 @@ dependencies {
     implementation 'org.springframework.security:spring-security-oauth2-jose' // JWT 생성/검증
 
     runtimeOnly 'com.h2database:h2'
+    runtimeOnly 'org.postgresql:postgresql'
+
 
     compileOnly 'org.projectlombok:lombok'
     annotationProcessor 'org.projectlombok:lombok'

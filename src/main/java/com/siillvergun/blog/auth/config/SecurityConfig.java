@@ -42,7 +42,8 @@ public class SecurityConfig {
         // 회원가입, 로그인, H2 콘솔은 인증 없이 허용
         // 나머지 요청은 인증 필요
         http.authorizeHttpRequests(auth -> auth
-                .requestMatchers("/users/join", "/auth/login", "/h2-console/**", "/users").permitAll()
+                .requestMatchers("/users/join", "/auth/login", "/h2-console/**", "/users", "/posts", "/comments").permitAll()
+                .requestMatchers("/", "/index.html", "/static/**", "/css/**", "/js/**").permitAll()
                 .anyRequest().authenticated()
         );
 
